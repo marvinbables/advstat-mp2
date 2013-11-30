@@ -39,7 +39,7 @@ public class ParameterPanel extends JPanel implements KeyListener, ActionListene
 	
 	private Dimension smallDimension = new Dimension(100, 30);
 	private Dimension mediumDimension = new Dimension(150, 30);
-	private Dimension wideDimension = new Dimension(300, 30);
+	private Dimension wideDimension = new Dimension(350, 30);
 	private JButton btnAddTerm;
 	private Component btnGraph;
 	
