@@ -1,0 +1,27 @@
+package model;
+
+import java.util.ArrayList;
+
+import method.RegulaFalsi;
+import method.Secant;
+
+public class Model {
+
+	ArrayList<Iteration> iterations = null;
+	
+	public void compute(int x0, int x1, int numIteration, int methodType) {
+		switch(methodType) {
+			// regula falsi
+			case 0: 
+				RegulaFalsi regula = new RegulaFalsi(numIteration);
+				iterations = regula.compute(x0, x1);
+				break;
+			// secant
+			case 1:
+				Secant secant = new Secant(numIteration);
+				iterations = secant.compute(x0, x1);
+				break;
+		}
+	}
+	
+}
