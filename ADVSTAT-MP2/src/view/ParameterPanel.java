@@ -11,9 +11,12 @@ import java.awt.event.KeyListener;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+
+import org.jdesktop.swingx.JXFormattedTextField;
 
 import method.Polynomial;
 
@@ -24,37 +27,39 @@ public class ParameterPanel extends JPanel implements KeyListener {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private JTextField txtPolynomial, txtIterations, txtX0, txtX1;
+	private JTextField inputPolynomial, txtIterations, txtX0, txtX1;
 	private JButton btnCompute;
-	private JLabel lblPolynomial;
+	private JLabel outputPolynomial;
 	private JComboBox<String> cmbxMethod;
 	private int selectedMethod;
 	private boolean SHOW_BORDER = !true;
 	
 	private JLabel lblx1;
 	
+	private Dimension txtInputDimension = new Dimension(100, 30);
+	
+	public JFormattedTextField newInput(String inputHint){
+		JXFormattedTextField txtField = new JXFormattedTextField(inputHint);
+		txtField.setPreferredSize(txtInputDimension);
+		return txtField;
+	}
+	
 	public ParameterPanel() {
 		setPreferredSize(new Dimension(400, 110));
 		setLayout(new FlowLayout(FlowLayout.CENTER));
+		setBorder(BorderFactory.createEtchedBorder());
 		
-		createComponents();
-	}
-
-	private void createComponents() {
-		JLabel lblPolym = new JLabel("Polynomial");
-		lblPolym.setPreferredSize(new Dimension(70, 30));
-		add(lblPolym);
+		inputPolynomial = newInput("Polynomial");
+		inputPolynomial.setPreferredSize(new Dimension(100, 30));
+		inputPolynomial.addKeyListener(this);
+		add(inputPolynomial);
 		
-		txtPolynomial = new JTextField();
-		txtPolynomial.setPreferredSize(new Dimension(100, 30));
-		txtPolynomial.addKeyListener(this);
-		add(txtPolynomial);
 		
-		lblPolynomial = new JLabel();
-		lblPolynomial.setPreferredSize(new Dimension(190, 30));
-		lblPolynomial.setHorizontalAlignment(JTextField.CENTER);
-		lblPolynomial.setText("x^2 + x + 3");
-		add(lblPolynomial);
+		outputPolynomial = new JLabel();
+		outputPolynomial.setPreferredSize(new Dimension(190, 30));
+		outputPolynomial.setHorizontalAlignment(JTextField.CENTER);
+		outputPolynomial.setText("x^2 + x + 3");
+		add(outputPolynomial);
 		
 		JPanel panelMethod = new JPanel();
 		panelMethod.setPreferredSize(new Dimension(300, 40));
@@ -134,9 +139,8 @@ public class ParameterPanel extends JPanel implements KeyListener {
 		add(btnCompute);
 		
 		if(SHOW_BORDER) {
-			lblPolynomial.setBorder(BorderFactory.createEtchedBorder());
+			outputPolynomial.setBorder(BorderFactory.createEtchedBorder());
 			lblIteration.setBorder(BorderFactory.createEtchedBorder());
-			lblPolym.setBorder(BorderFactory.createEtchedBorder());
 			panelMethod.setBorder(BorderFactory.createEtchedBorder());
 			lblx0.setBorder(BorderFactory.createEtchedBorder());
 			lblx1.setBorder(BorderFactory.createEtchedBorder());
@@ -145,11 +149,11 @@ public class ParameterPanel extends JPanel implements KeyListener {
 	}
 
 	public JTextField getTxtPolynomial() {
-		return txtPolynomial;
+		return inputPolynomial;
 	}
 
 	public JLabel getLblPolynomial() {
-		return lblPolynomial;
+		return outputPolynomial;
 	}
 
 	@Override
@@ -158,13 +162,13 @@ public class ParameterPanel extends JPanel implements KeyListener {
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		String input[] = txtPolynomial.getText().split(" ");
+		String input[] = inputPolynomial.getText().split(" ");
 		double d = 0, numbers[] = new double[input.length];
 		boolean error = false;
-		txtPolynomial.setBackground(Color.white);
+		inputPolynomial.setBackground(Color.white);
 		
 		if(input.length % 2 != 0)
-			txtPolynomial.setBackground(Color.pink);
+			inputPolynomial.setBackground(Color.pink);
 		else {
 			for (int i = 0; i < input.length; i++) {
 				try {
@@ -172,7 +176,7 @@ public class ParameterPanel extends JPanel implements KeyListener {
 					numbers[i] = d;
 				} catch(NumberFormatException ex) {
 					error = true;
-					txtPolynomial.setBackground(Color.pink);
+					inputPolynomial.setBackground(Color.pink);
 				}
 			}
 			if(!error)
@@ -244,7 +248,7 @@ public class ParameterPanel extends JPanel implements KeyListener {
 			}
 		}
 		Polynomial.setPolynomial(numbers);
-		lblPolynomial.setText(text);
+		outputPolynomial.setText(text);
 	}
 
 	@Override

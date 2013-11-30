@@ -1,5 +1,6 @@
 package view;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
@@ -8,31 +9,31 @@ import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
+
 
 public class View extends JFrame {
 	ParameterPanel paramPanel;
 	
 	public View() {
 		super("Roots of Polynomials");
-		setPreferredSize(new Dimension(450, 600));
+		//setPreferredSize(new Dimension(450, 600));
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setResizable(false);
 		setLayout(new FlowLayout());
 		
-		JPanel panel = new JPanel();
-		panel.setPreferredSize(new Dimension(420, 300));
-		panel.setBorder(BorderFactory.createEtchedBorder());
-		panel.setLayout(new FlowLayout(FlowLayout.LEFT));
-		
 		paramPanel = new ParameterPanel();
-		panel.add(paramPanel);
-		
-		add(panel);
+		add(paramPanel);
 		
 		JPanel temp = new JPanel();
-		temp.setPreferredSize(new Dimension(420, 250));
 		temp.setBorder(BorderFactory.createEtchedBorder());
+		double[] c = {5, 2, 1, -2, 4, -2};
+		PolynomialFunction function = new PolynomialFunction(c);
+		PolynomialGraph graph = new PolynomialGraph(function);
+		
+		temp.add(graph.getChart());
 		add(temp);
+		
 		
 		pack(); 
 		setLocationRelativeTo(null);
