@@ -1,6 +1,7 @@
 package view;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -16,12 +17,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.jdesktop.swingx.JXFormattedTextField;
-
 import method.Polynomial;
 
+import org.jdesktop.swingx.JXFormattedTextField;
 
-public class ParameterPanel extends JPanel implements KeyListener {
+
+public class ParameterPanel extends JPanel implements KeyListener, ActionListener {
 	
 	/**
 	 * 
@@ -36,38 +37,59 @@ public class ParameterPanel extends JPanel implements KeyListener {
 	
 	private JLabel lblx1;
 	
-	private Dimension txtInputDimension = new Dimension(100, 30);
+	private Dimension smallDimension = new Dimension(100, 30);
+	private Dimension mediumDimension = new Dimension(150, 30);
+	private Dimension wideDimension = new Dimension(300, 30);
+	private JButton btnAddTerm;
+	private Component btnGraph;
 	
 	public JFormattedTextField newInput(String inputHint){
 		JXFormattedTextField txtField = new JXFormattedTextField(inputHint);
-		txtField.setPreferredSize(txtInputDimension);
+		txtField.setPreferredSize(mediumDimension);
 		return txtField;
 	}
 	
+	public JLabel newLabel(String string){
+		JLabel label = new JLabel(string);
+		label.setPreferredSize(mediumDimension);
+		return label;
+	}
+	
+	public JLabel newLabel(){
+		return newLabel(null);
+	}
+	
+	public JButton newButton(String string, ActionListener listener){
+		JButton button = new JButton(string);
+		button.setPreferredSize(smallDimension);
+		button.addActionListener(listener);
+		return button;
+	}
+	
 	public ParameterPanel() {
-		setPreferredSize(new Dimension(400, 110));
+		setPreferredSize(new Dimension(400, 400));
 		setLayout(new FlowLayout(FlowLayout.CENTER));
 		setBorder(BorderFactory.createEtchedBorder());
 		
-		inputPolynomial = newInput("Polynomial");
-		inputPolynomial.setPreferredSize(new Dimension(100, 30));
+		outputPolynomial = newLabel("No polynomial yet");
+		outputPolynomial.setPreferredSize(wideDimension );
+		add(outputPolynomial);
+		
+		inputPolynomial = newInput("e.g. 11x^3");
 		inputPolynomial.addKeyListener(this);
 		add(inputPolynomial);
 		
+		btnAddTerm = newButton("Add term", this);
+		add(btnAddTerm);
 		
-		outputPolynomial = new JLabel();
-		outputPolynomial.setPreferredSize(new Dimension(190, 30));
-		outputPolynomial.setHorizontalAlignment(JTextField.CENTER);
-		outputPolynomial.setText("x^2 + x + 3");
-		add(outputPolynomial);
+		btnGraph = newButton("Graph", this);
+		add(btnGraph);
 		
-		JPanel panelMethod = new JPanel();
-		panelMethod.setPreferredSize(new Dimension(300, 40));
-		panelMethod.setLayout(new FlowLayout(FlowLayout.LEFT));
+		JLabel lblMethod = newLabel("Select a method");
+		add(lblMethod);
 		
-		selectedMethod = 0;
 		cmbxMethod = new JComboBox<String>();
-		cmbxMethod.setPreferredSize(new Dimension(130, 30));
+		cmbxMethod.setPreferredSize(mediumDimension);
 		cmbxMethod.addItem("Regula Falsi");
 		cmbxMethod.addItem("Secant");
 		//cmbxMethod.addItem("Bisection");
@@ -86,22 +108,6 @@ public class ParameterPanel extends JPanel implements KeyListener {
 				txtX1.setVisible(true);
 				lblx1.setVisible(true);
 			}
-			/*
-			private void updateMethodPanel() {
-				switch (selectedMethod) {
-				case 0:
-					
-					break;
-				case 3:
-					txtX1.setVisible(false);
-					lblx1.setVisible(false);
-					break;
-				default:
-					break;
-				}
-				
-			}
-			*/
 		});
 		add(cmbxMethod);
 		
@@ -141,7 +147,6 @@ public class ParameterPanel extends JPanel implements KeyListener {
 		if(SHOW_BORDER) {
 			outputPolynomial.setBorder(BorderFactory.createEtchedBorder());
 			lblIteration.setBorder(BorderFactory.createEtchedBorder());
-			panelMethod.setBorder(BorderFactory.createEtchedBorder());
 			lblx0.setBorder(BorderFactory.createEtchedBorder());
 			lblx1.setBorder(BorderFactory.createEtchedBorder());
 			setBorder(BorderFactory.createEtchedBorder());
@@ -274,6 +279,12 @@ public class ParameterPanel extends JPanel implements KeyListener {
 
 	public JComboBox<String> getCmbxMethod() {
 		return cmbxMethod;
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
