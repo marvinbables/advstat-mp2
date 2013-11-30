@@ -191,69 +191,7 @@ public class ParameterPanel extends JPanel implements KeyListener, ActionListene
 
 
 	private void toPolynomial(double[] numbers) {
-		String text = "";
-		
-		for (int i = 0; i < numbers.length; i++) {
-			if(i % 2 != 0) {
-				if(numbers[i-1] != 0) {
-					if(numbers[i] != 0) {
-						if(Math.abs(numbers[i]) - Math.floor(Math.abs(numbers[i])) == 0) {
-							int number = (int)numbers[i];
-							if(number < 0)
-								text += "x^(" + number + ")";
-							else {
-								if(number == 1)
-									text += "x";
-								else
-									text += "x^" + number;
-								
-							}
-						}
-						else {
-							if(numbers[i] < 0)
-								text += "x^(" + numbers[i] + ")";
-							else {
-								if(numbers[i] == 1)
-									text += "x";
-								else
-									text += "x^" + numbers[i];
-							}
-						}
-					}
-				}
-			}
-			else {
-				if(numbers[i] != 0) {
-					int num = 0;
 
-					if( Math.abs(numbers[i]) - Math.floor(Math.abs(numbers[i])) == 0) {
-						num = (int)numbers[i];
-						if(num < 0) {
-							text += " - " + (num == -1? "" : Math.abs(num));
-						}
-						else {
-							if(i != 0)
-								text += " + " + (num == 1? "" : num);
-							else
-								text += (num == 1? "" : num);
-						}
-					}
-					else {
-						if(numbers[i] < 0) {
-							text += " - " + (numbers[i] == -1? "" : Math.abs(numbers[i]));
-						}
-						else {
-							if(i != 0)
-								text += " + " + (numbers[i] == 1? "" : numbers[i]);
-							else
-								text += (numbers[i] == 1? "" : numbers[i]);
-						}
-					}
-				}
-			}
-		}
-		Polynomial.setPolynomial(numbers);
-		outputPolynomial.setText(text);
 	}
 
 	@Override

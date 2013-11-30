@@ -2,15 +2,10 @@ package view;
 
 import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-
-import model.polynomial.Polynomial;
-import model.polynomial.Term;
 
 import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
 
@@ -32,12 +27,6 @@ public class View extends JFrame {
 		JPanel temp = new JPanel();
 		temp.setBorder(BorderFactory.createEtchedBorder());
 		double[] c = {5, 2, 1, -2, 4, -2};
-		
-		ArrayList<Term> terms = new ArrayList<Term>();
-		terms.add(new Term(1, 0));
-		terms.add(new Term(2, 1));
-		terms.add(new Term(3, 2));
-		System.out.println(new Polynomial(terms));
 		
 		PolynomialFunction function = new PolynomialFunction(c);
 		PolynomialGraph graph = new PolynomialGraph(function, "Sample graph");
