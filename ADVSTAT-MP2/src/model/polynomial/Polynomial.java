@@ -1,5 +1,6 @@
 package model.polynomial;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -29,5 +30,11 @@ public class Polynomial {
 	}
 	public double[] getDoubles() {
 		return doubles;
+	}
+	
+	public Polynomial addTerm(Term a){
+		ArrayList<Term> newList = new ArrayList<Term>(terms);
+		newList.add(a);
+		return new Polynomial(newList);
 	}
 }

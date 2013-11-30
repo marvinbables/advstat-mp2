@@ -36,6 +36,13 @@ public class Term {
 		return "^" + displayDouble(exponent);
 	}
 	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Term) return false;
+		Term src = (Term)obj;
+		return src.coefficient == coefficient && src.exponent == exponent;
+	};
+	
 	private String displayDouble(double d){
 		DecimalFormat df2 = new DecimalFormat( "#,###,###,##0.00" );
 		if (d == Math.floor(d))
