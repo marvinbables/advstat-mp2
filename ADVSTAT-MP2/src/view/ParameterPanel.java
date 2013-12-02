@@ -1,64 +1,190 @@
 package view;
 
-import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import method.Polynomial;
+import model.polynomial.Polynomial;
+import model.polynomial.Term;
 
 import org.jdesktop.swingx.JXFormattedTextField;
 
+import view.listeners.GraphListener;
+import view.listeners.GraphListener.GraphParameters;
 
-public class ParameterPanel extends JPanel implements KeyListener, ActionListener {
-	
+
+public class ParameterPanel extends JPanel implements ActionListener{
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private JTextField inputPolynomial, txtIterations, txtX0, txtX1;
-	private JButton btnCompute;
+	private JTextField inputTerm;
 	private JLabel outputPolynomial;
+
+	private JButton btnAddTerm;
+	private JButton btnGraph;
+	
 	private JComboBox<String> cmbxMethod;
+	
+	private Polynomial currentPolynomial;
 	private int selectedMethod;
-	private boolean SHOW_BORDER = !true;
 	
-	private JLabel lblx1;
-	
+	private static final boolean SHOW_BORDER = false;
+
 	private Dimension smallDimension = new Dimension(100, 30);
 	private Dimension mediumDimension = new Dimension(150, 30);
 	private Dimension wideDimension = new Dimension(350, 30);
-	private JButton btnAddTerm;
-	private Component btnGraph;
+	private GraphListener graphListener;
+
+
+	public ParameterPanel() {
+		/** Initialize the panel */
+		setPreferredSize(new Dimension(400, 400));
+		setLayout(new FlowLayout(FlowLayout.CENTER));
+		setBorder(BorderFactory.createEtchedBorder());
+		
+		/** Initialize parameters */
+		InitializeParameters();
+
+		/** Initialize components */
+		outputPolynomial = newLabel("No polynomial yet");
+		outputPolynomial.setPreferredSize(wideDimension );
+		add(outputPolynomial);
+
+		inputTerm = newInput("e.g. 11x^3");
+		inputTerm.addKeyListener(new KeyHandler());
+		add(inputTerm);
+
+		btnAddTerm = newButton("Add term", this);
+		add(btnAddTerm);
+
+		btnGraph = newButton("Graph", this);
+		
+		add(btnGraph);
+
+		/** Initialize methods available */
+		JLabel lblMethod = newLabel("Select a method");
+		add(lblMethod);
+
+		cmbxMethod = new JComboBox<String>();
+		cmbxMethod.setPreferredSize(mediumDimension);
+		cmbxMethod.addItem("Regula Falsi");
+		cmbxMethod.addItem("Secant");
+		cmbxMethod.addActionListener(new ActionListener() { 
+			public void actionPerformed(ActionEvent e) { selectedMethod = cmbxMethod.getSelectedIndex(); }
+			});
+		add(cmbxMethod);
+
+		if(SHOW_BORDER) {
+			outputPolynomial.setBorder(BorderFactory.createEtchedBorder());
+			
+		}
+	}
+
+	private void InitializeParameters() {
+		currentPolynomial = new Polynomial(new ArrayList<Term>());
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		Object target = e.getSource();
+		if (target.equals(btnAddTerm)){
+			Term newTerm = null;
+			
+			/** Parsing */
+			try {
+				double coefficient 	= -1;
+				int exponent 		= -1;
+				boolean hasX		= false;
+				boolean hasExponent = false;
+				
+				
+				String text = inputTerm.getText();
+				text = text.toLowerCase();
+				
+				hasExponent = text.contains("^");
+				hasX = text.contains("x");
+				
+				if (text.contains("+") || text.contains("e") || text.contains("*") || text.contains("/"))
+					throw new Exception("Invalid!");
+				
+				if (!hasExponent){
+					if (hasX)
+						exponent = 1;
+					else
+						exponent = 0;
+				}
+				
+				// Remove x and exponent, and split
+				text = text.replace("^", "");
+				text = text.trim();
+				String[] tokens = text.split("x");
+				
+				if (tokens.length == 0 || tokens[0].length() == 0 && hasX)
+					coefficient = 1;
+				
+				if (exponent == -1) exponent = Integer.parseInt(tokens[1]);
+				if (coefficient == -1) coefficient = Double.parseDouble(tokens[0]);
+				
+				newTerm = new Term(coefficient, exponent);
+				currentPolynomial = currentPolynomial.addTerm(newTerm);
+				System.out.println(currentPolynomial);
+				outputPolynomial.setText(currentPolynomial.toString());
+			}catch(Exception err){
+				String problem = "Please follow the format: 3x^3!";
+				JOptionPane.showMessageDialog(this, problem, "Input error", JOptionPane.ERROR_MESSAGE);
+			}
+			
+			
+			
+		}else if (target.equals(btnGraph)){
+			GraphParameters parameters = new GraphParameters(currentPolynomial);
+			graphListener.GraphRequested(parameters);
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	/** Getters, setters, and factories */
+	
+	public void setGraphListener(GraphListener listener){
+		graphListener = listener;
+	}
 	
 	public JFormattedTextField newInput(String inputHint){
 		JXFormattedTextField txtField = new JXFormattedTextField(inputHint);
 		txtField.setPreferredSize(mediumDimension);
 		return txtField;
 	}
-	
+
 	public JLabel newLabel(String string){
 		JLabel label = new JLabel(string);
 		label.setPreferredSize(mediumDimension);
 		return label;
 	}
-	
+
 	public JLabel newLabel(){
 		return newLabel(null);
 	}
-	
+
 	public JButton newButton(String string, ActionListener listener){
 		JButton button = new JButton(string);
 		button.setPreferredSize(smallDimension);
@@ -66,163 +192,15 @@ public class ParameterPanel extends JPanel implements KeyListener, ActionListene
 		return button;
 	}
 	
-	public ParameterPanel() {
-		setPreferredSize(new Dimension(400, 400));
-		setLayout(new FlowLayout(FlowLayout.CENTER));
-		setBorder(BorderFactory.createEtchedBorder());
-		
-		outputPolynomial = newLabel("No polynomial yet");
-		outputPolynomial.setPreferredSize(wideDimension );
-		add(outputPolynomial);
-		
-		inputPolynomial = newInput("e.g. 11x^3");
-		inputPolynomial.addKeyListener(this);
-		add(inputPolynomial);
-		
-		btnAddTerm = newButton("Add term", this);
-		add(btnAddTerm);
-		
-		btnGraph = newButton("Graph", this);
-		add(btnGraph);
-		
-		JLabel lblMethod = newLabel("Select a method");
-		add(lblMethod);
-		
-		cmbxMethod = new JComboBox<String>();
-		cmbxMethod.setPreferredSize(mediumDimension);
-		cmbxMethod.addItem("Regula Falsi");
-		cmbxMethod.addItem("Secant");
-		//cmbxMethod.addItem("Bisection");
-		//cmbxMethod.addItem("Newton-Raphson");
-		
-		cmbxMethod.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				selectedMethod = cmbxMethod.getSelectedIndex();
-				setVisible();
-				//updateMethodPanel();
+	
+	public class KeyHandler extends KeyAdapter{ 
+		@Override
+		public void keyPressed(KeyEvent e) {
+			if (e.getKeyCode() == KeyEvent.VK_ENTER){
+				ParameterPanel.this.actionPerformed(new ActionEvent(btnAddTerm, ActionEvent.ACTION_PERFORMED, "Add a term"));
 			}
-			
-			private void setVisible() {
-				txtX1.setVisible(true);
-				lblx1.setVisible(true);
-			}
-		});
-		add(cmbxMethod);
-		
-		JLabel lblx0 = new JLabel("X0");
-		lblx0.setPreferredSize(new Dimension(30, 30));
-		lblx0.setHorizontalAlignment(JTextField.CENTER);
-		add(lblx0);
-		
-		txtX0 = new JTextField();
-		txtX0.setPreferredSize(new Dimension(40, 30));
-		add(txtX0);
-		
-		lblx1 = new JLabel("X1");
-		lblx0.setPreferredSize(new Dimension(30, 30));
-		add(lblx1);
-		
-		txtX1 = new JTextField();
-		txtX1.setPreferredSize(new Dimension(40, 30));
-		add(txtX1);
-		
-		//add(panelMethod);
-		
-		JLabel lblIteration = new JLabel("i");
-		lblIteration.setPreferredSize(new Dimension(30, 30));
-		lblIteration.setHorizontalAlignment(JTextField.CENTER);
-		add(lblIteration);
-		
-		txtIterations = new JTextField();
-		txtIterations.setPreferredSize(new Dimension(40, 30));
-		add(txtIterations);
-		
-		btnCompute = new JButton("Compute");
-		btnCompute.setPreferredSize(new Dimension(100, 30));
-		btnCompute.setBorder(BorderFactory.createEtchedBorder());
-		add(btnCompute);
-		
-		if(SHOW_BORDER) {
-			outputPolynomial.setBorder(BorderFactory.createEtchedBorder());
-			lblIteration.setBorder(BorderFactory.createEtchedBorder());
-			lblx0.setBorder(BorderFactory.createEtchedBorder());
-			lblx1.setBorder(BorderFactory.createEtchedBorder());
-			setBorder(BorderFactory.createEtchedBorder());
+			super.keyPressed(e);
 		}
-	}
-
-	public JTextField getTxtPolynomial() {
-		return inputPolynomial;
-	}
-
-	public JLabel getLblPolynomial() {
-		return outputPolynomial;
-	}
-
-	@Override
-	public void keyPressed(KeyEvent e) {
-	}
-
-	@Override
-	public void keyReleased(KeyEvent e) {
-		String input[] = inputPolynomial.getText().split(" ");
-		double d = 0, numbers[] = new double[input.length];
-		boolean error = false;
-		inputPolynomial.setBackground(Color.white);
-		
-		if(input.length % 2 != 0)
-			inputPolynomial.setBackground(Color.pink);
-		else {
-			for (int i = 0; i < input.length; i++) {
-				try {
-					d = Double.parseDouble(input[i]);
-					numbers[i] = d;
-				} catch(NumberFormatException ex) {
-					error = true;
-					inputPolynomial.setBackground(Color.pink);
-				}
-			}
-			if(!error)
-				toPolynomial(numbers);
-		}
-	}
-
-
-	private void toPolynomial(double[] numbers) {
-
-	}
-
-	@Override
-	public void keyTyped(KeyEvent e) {
-		
-	}
-
-	public void addActionListener(ActionListener l) {
-		btnCompute.addActionListener(l);
-	}
-
-	public JTextField getTxtIterations() {
-		return txtIterations;
-	}
-
-	public JTextField getTxtX0() {
-		return txtX0;
-	}
-
-	public JTextField getTxtX1() {
-		return txtX1;
-	}
-
-	public JComboBox<String> getCmbxMethod() {
-		return cmbxMethod;
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

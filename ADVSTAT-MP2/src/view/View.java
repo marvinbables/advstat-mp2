@@ -1,7 +1,6 @@
 package view;
 
 import java.awt.FlowLayout;
-import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
@@ -9,10 +8,15 @@ import javax.swing.JPanel;
 
 import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
 
+import view.listeners.GraphListener;
+
 
 @SuppressWarnings("serial")
-public class View extends JFrame {
-	ParameterPanel paramPanel;
+public class View extends JFrame implements GraphListener{
+	private ParameterPanel parameterPanel;
+	private JPanel graphPanel;
+	private PolynomialGraph graph;
+	
 	
 	public View() {
 		super("Roots of Polynomials");
@@ -21,47 +25,35 @@ public class View extends JFrame {
 		setResizable(false);
 		setLayout(new FlowLayout());
 		
-		paramPanel = new ParameterPanel();
-		add(paramPanel);
+		parameterPanel = new ParameterPanel();
+		parameterPanel.setBorder(BorderFactory.createEtchedBorder());
+		parameterPanel.setGraphListener(this);
+		add(parameterPanel);
 		
-		JPanel temp = new JPanel();
-		temp.setBorder(BorderFactory.createEtchedBorder());
-		double[] c = {5, 2, 1, -2, 4, -2};
-		
-		PolynomialFunction function = new PolynomialFunction(c);
-		PolynomialGraph graph = new PolynomialGraph(function, "Sample graph");
-		
-		temp.add(graph.getChart());
-		add(temp);
+		graphPanel = new JPanel();
+		graphPanel.setBorder(BorderFactory.createEtchedBorder());
+		add(graphPanel);
 		
 		
 		pack(); 
 		setLocationRelativeTo(null);
 		setVisible(true);
 	}
-
-	public ParameterPanel getParamPanel() {
-		return paramPanel;
-	}
 	
-	public int getSelectedMethod() {
-		return paramPanel.getCmbxMethod().getSelectedIndex();
-	}
-	
-	public int getIterations() throws NumberFormatException {
-		return Integer.parseInt(paramPanel.getTxtIterations().getText());
-	}
-	
-	public int getX0() throws NumberFormatException {
-		return Integer.parseInt(paramPanel.getTxtX0().getText());
-	}
-	
-	public int getX1() throws NumberFormatException {
-		return Integer.parseInt(paramPanel.getTxtX1().getText());
-	}
-	
-	public void addActionListener(ActionListener l) {
-		paramPanel.addActionListener(l);
+	public void drawGraph(GraphParameters parameters){
+		graphPanel.removeAll();
+		
+		double[] c = parameters.polynomial.getDoubles();
+		PolynomialFunction function = new PolynomialFunction(c);
+		graph = new PolynomialGraph(function, "Sample graph");
+		
+		graphPanel.add(graph.getChart());
+		
 	}
 
+	@Override
+	public void GraphRequested(GraphParameters parameters) {
+		drawGraph(parameters);
+	}
+	
 }

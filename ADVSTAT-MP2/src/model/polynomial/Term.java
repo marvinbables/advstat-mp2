@@ -38,7 +38,7 @@ public class Term {
 	
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof Term) return false;
+		if (obj instanceof Term == false) return false;
 		Term src = (Term)obj;
 		return src.coefficient == coefficient && src.exponent == exponent;
 	};
@@ -48,5 +48,12 @@ public class Term {
 		if (d == Math.floor(d))
 			return String.valueOf((int)d);
 		return new Double(df2.format(exponent)).toString();
+	}
+	
+	public Term add(Term b){
+		if (b.exponent == this.exponent){
+			return new Term(this.coefficient + b.coefficient, exponent);
+		}
+		return null;
 	}
 }

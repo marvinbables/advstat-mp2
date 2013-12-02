@@ -4,91 +4,30 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * A class used to represent polynomials.
+ * This class only handles exponents of the X which 
+ * are integral.
+ * @author Darren
+ *
+ */
 public class Polynomial {
-	private List<Term> terms;
+	private ArrayList<Term> terms;
 	private double[] doubles;
 	
-	public Polynomial(List<Term> terms){
+	public Polynomial(ArrayList<Term> terms){
 		this.terms = terms;
 		Collections.sort(terms, new TermComparator());
 		
 	}
 	
 	public Polynomial(double[] coefficients) throws Exception{
-		String text = "";
-		
-		for (int i = 0; i < coefficients.length; i++) {
-			if(i % 2 != 0) {
-				if(coefficients[i-1] != 0) {
-					if(coefficients[i] != 0) {
-						if(Math.abs(coefficients[i]) - Math.floor(Math.abs(coefficients[i])) == 0) {
-							int number = (int)coefficients[i];
-							if(number < 0)
-								text += "x^(" + number + ")";
-							else {
-								if(number == 1)
-									text += "x";
-								else
-									text += "x^" + number;
-								
-							}
-						}
-						else {
-							if(coefficients[i] < 0)
-								text += "x^(" + coefficients[i] + ")";
-							else {
-								if(coefficients[i] == 1)
-									text += "x";
-								else
-									text += "x^" + coefficients[i];
-							}
-						}
-					}
-				}
-			}
-			else {
-				if(coefficients[i] != 0) {
-					int num = 0;
-
-					if( Math.abs(coefficients[i]) - Math.floor(Math.abs(coefficients[i])) == 0) {
-						num = (int)coefficients[i];
-						if(num < 0) {
-							text += " - " + (num == -1? "" : Math.abs(num));
-						}
-						else {
-							if(i != 0)
-								text += " + " + (num == 1? "" : num);
-							else
-								text += (num == 1? "" : num);
-						}
-					}
-					else {
-						if(coefficients[i] < 0) {
-							text += " - " + (coefficients[i] == -1? "" : Math.abs(coefficients[i]));
-						}
-						else {
-							if(i != 0)
-								text += " + " + (coefficients[i] == 1? "" : coefficients[i]);
-							else
-								text += (coefficients[i] == 1? "" : coefficients[i]);
-						}
-					}
-				}
-			}
+		terms = new ArrayList<Term>();
+		for (int exponent = 0; exponent < coefficients.length; exponent++){
+			double currentCoefficient = coefficients[exponent];
+			terms.add(new Term(currentCoefficient, exponent));
 		}
-		
-		
-		
-		/**
-		 * TODO: Marvin
-		 * This code needs to be modified in such a way that 
-		 * the list of terms were able to be parsed from the 
-		 * array of doubles.
-		 */
-		
-		this.terms = new ArrayList<Term>();
 		Collections.sort(terms, new TermComparator());
-		
 	}
 	
 	public String toString(){
@@ -102,6 +41,34 @@ public class Polynomial {
 		return sb.toString();
 	}
 	
+	/**
+	 * Adds a term to the polynomial.
+	 * If the term already exists, the coefficient is increased.
+	 * @param b - the new term to add
+	 * @return the resulting polynomial
+	 */
+	public Polynomial addTerm(Term b){
+		ArrayList<Term> newList = new ArrayList<Term>(terms);
+		Term term = getTerm(b.exponent);
+		if (term == null){
+			newList.add(b);
+		}else{
+			newList.remove(term);
+			Term newTerm = term.add(b);
+			if (newTerm.coefficient != 0)
+				newList.add(newTerm);
+		}
+		return new Polynomial(newList);
+	}
+	
+	private Term getTerm(int exponent){
+		for (Term term : terms) {
+			if (term.exponent == exponent)
+				return term;
+		}
+		return null;
+	}
+	
 	public List<Term> getTerms() {
 		return terms;
 	}
@@ -109,9 +76,5 @@ public class Polynomial {
 		return doubles;
 	}
 	
-	public Polynomial addTerm(Term a){
-		ArrayList<Term> newList = new ArrayList<Term>(terms);
-		newList.add(a);
-		return new Polynomial(newList);
-	}
+	
 }
