@@ -46,35 +46,42 @@ public class ParameterPanel extends JPanel implements ActionListener{
 	private static final boolean SHOW_BORDER = false;
 
 	private Dimension smallDimension = new Dimension(100, 30);
-	private Dimension mediumDimension = new Dimension(150, 30);
-	private Dimension wideDimension = new Dimension(350, 30);
+	private Dimension mediumDimension = new Dimension(200, 30);
+	private Dimension wideDimension = new Dimension(420, 50);
 	private GraphListener graphListener;
+	private JButton btnReset;
 
 
 	public ParameterPanel() {
 		/** Initialize the panel */
-		setPreferredSize(new Dimension(400, 400));
+		setPreferredSize(new Dimension(400, 300));
 		setLayout(new FlowLayout(FlowLayout.CENTER));
 		setBorder(BorderFactory.createEtchedBorder());
 		
-		/** Initialize parameters */
-		InitializeParameters();
-
 		/** Initialize components */
-		outputPolynomial = newLabel("No polynomial yet");
-		outputPolynomial.setPreferredSize(wideDimension );
+		outputPolynomial = newLabel("");
+		outputPolynomial.setBorder(BorderFactory.createTitledBorder("Current Polynomial"));
+		outputPolynomial.setPreferredSize(wideDimension);
 		add(outputPolynomial);
 
-		inputTerm = newInput("e.g. 11x^3");
+		/** Initialize parameters */
+		InitializeParameters();
+		
+		inputTerm = newInput("e.g. 4x^2");
+		inputTerm.setPreferredSize(smallDimension);
 		inputTerm.addKeyListener(new KeyHandler());
 		add(inputTerm);
 
 		btnAddTerm = newButton("Add term", this);
 		add(btnAddTerm);
 
-		btnGraph = newButton("Graph", this);
+		btnReset = newButton("Reset", this);
+		add(btnReset);
 		
+		btnGraph = newButton("Graph", this);
 		add(btnGraph);
+		
+		
 
 		/** Initialize methods available */
 		JLabel lblMethod = newLabel("Select a method");
@@ -97,61 +104,19 @@ public class ParameterPanel extends JPanel implements ActionListener{
 
 	private void InitializeParameters() {
 		currentPolynomial = new Polynomial(new ArrayList<Term>());
+		outputPolynomial.setText(currentPolynomial.toString());
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		Object target = e.getSource();
-		if (target.equals(btnAddTerm)){
-			Term newTerm = null;
-			
-			/** Parsing */
-			try {
-				double coefficient 	= -1;
-				int exponent 		= -1;
-				boolean hasX		= false;
-				boolean hasExponent = false;
-				
-				
-				String text = inputTerm.getText();
-				text = text.toLowerCase();
-				
-				hasExponent = text.contains("^");
-				hasX = text.contains("x");
-				
-				if (text.contains("+") || text.contains("e") || text.contains("*") || text.contains("/"))
-					throw new Exception("Invalid!");
-				
-				if (!hasExponent){
-					if (hasX)
-						exponent = 1;
-					else
-						exponent = 0;
-				}
-				
-				// Remove x and exponent, and split
-				text = text.replace("^", "");
-				text = text.trim();
-				String[] tokens = text.split("x");
-				
-				if (tokens.length == 0 || tokens[0].length() == 0 && hasX)
-					coefficient = 1;
-				
-				if (exponent == -1) exponent = Integer.parseInt(tokens[1]);
-				if (coefficient == -1) coefficient = Double.parseDouble(tokens[0]);
-				
-				newTerm = new Term(coefficient, exponent);
-				currentPolynomial = currentPolynomial.addTerm(newTerm);
-				System.out.println(currentPolynomial);
-				outputPolynomial.setText(currentPolynomial.toString());
-			}catch(Exception err){
-				String problem = "Please follow the format: 3x^3!";
-				JOptionPane.showMessageDialog(this, problem, "Input error", JOptionPane.ERROR_MESSAGE);
-			}
-			
-			
-			
-		}else if (target.equals(btnGraph)){
+		if (target.equals(btnAddTerm))
+			AddTerm();
+		
+		else if (target.equals(btnReset))
+			InitializeParameters();
+		
+		else if (target.equals(btnGraph)){
 			GraphParameters parameters = new GraphParameters(currentPolynomial);
 			graphListener.GraphRequested(parameters);
 		}
@@ -163,6 +128,57 @@ public class ParameterPanel extends JPanel implements ActionListener{
 	
 	
 	
+	private void AddTerm() {
+		Term newTerm = null;
+		
+		/** Parsing */
+		try {
+			double coefficient 	= -1;
+			int exponent 		= -1;
+			boolean hasX		= false;
+			boolean hasExponent = false;
+			
+			
+			String text = inputTerm.getText();
+			text = text.toLowerCase();
+			
+			text = text.replace("-x", "-1x");
+			text = text.replace("+x", "+1x");
+			text = text.substring(text.length() - 1).equalsIgnoreCase("x") ? text.replace("x", "x^1") : text;
+			
+			hasExponent = text.contains("^");
+			hasX = text.contains("x");
+			
+			if (text.contains("+") || text.contains("e") || text.contains("*") || text.contains("/"))
+				throw new Exception("Invalid!");
+			
+			if (!hasExponent){
+				if (hasX)
+					exponent = 1;
+				else
+					exponent = 0;
+			}
+			
+			// Remove x and exponent, and split
+			text = text.replace("^", "");
+			text = text.trim();
+			String[] tokens = text.split("x");
+			
+			if (tokens.length == 0 || tokens[0].length() == 0 && hasX)
+				coefficient = 1;
+			
+			if (exponent == -1) exponent = Integer.parseInt(tokens[1]);
+			if (coefficient == -1) coefficient = Double.parseDouble(tokens[0]);
+			
+			newTerm = new Term(coefficient, exponent);
+			currentPolynomial = currentPolynomial.addTerm(newTerm);
+			outputPolynomial.setText(currentPolynomial.toString());
+		}catch(Exception err){
+			String problem = "Please follow the format: 4x^2!";
+			JOptionPane.showMessageDialog(this, problem, "Input error", JOptionPane.ERROR_MESSAGE);
+		}
+	}
+
 	/** Getters, setters, and factories */
 	
 	public void setGraphListener(GraphListener listener){
@@ -187,6 +203,7 @@ public class ParameterPanel extends JPanel implements ActionListener{
 
 	public JButton newButton(String string, ActionListener listener){
 		JButton button = new JButton(string);
+		button.setFocusable(false);
 		button.setPreferredSize(smallDimension);
 		button.addActionListener(listener);
 		return button;

@@ -3,7 +3,6 @@ package view;
 import java.awt.Color;
 import java.awt.Dimension;
 
-import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -13,17 +12,13 @@ import org.jfree.data.general.DatasetUtilities;
 import org.jfree.data.xy.XYDataset;
 
 public class PolynomialGraph {
-	private PolynomialFunction function;
 	private PolynomialFunction2D graphableFunction;
 	private ChartPanel chartPanel;
 	
-	public PolynomialGraph(PolynomialFunction function, String graphTitle){
-		this.function = function;
-		graphableFunction = new PolynomialFunction2D(function.getCoefficients());
+	public PolynomialGraph(PolynomialFunction2D polynomialFunction2D, String graphTitle, double start, double end){
+		graphableFunction = polynomialFunction2D;
 		
-		double start = -2;
-		double end = 2;
-		int samples = 50;
+		int samples = 150;
 		XYDataset dataset = DatasetUtilities.sampleFunction2D(graphableFunction, start, end, samples, "function");
 		JFreeChart chart = ChartFactory.createXYLineChart(graphTitle, 
 						null, null,
@@ -33,7 +28,7 @@ public class PolynomialGraph {
 		
 		chart.setBackgroundPaint(new Color(238, 238, 238));
 		chartPanel = new ChartPanel(chart);
-		chartPanel.setPreferredSize(new Dimension(600, 390));
+		chartPanel.setPreferredSize(new Dimension(400, 290));
 	}
 
 	public ChartPanel getChart() {

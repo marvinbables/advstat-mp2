@@ -47,7 +47,7 @@ public class Term {
 		DecimalFormat df2 = new DecimalFormat( "#,###,###,##0.00" );
 		if (d == Math.floor(d))
 			return String.valueOf((int)d);
-		return new Double(df2.format(exponent)).toString();
+		return new Double(df2.format(d)).toString();
 	}
 	
 	public Term add(Term b){

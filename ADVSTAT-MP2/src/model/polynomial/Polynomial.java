@@ -17,8 +17,34 @@ public class Polynomial {
 	
 	public Polynomial(ArrayList<Term> terms){
 		this.terms = terms;
-		Collections.sort(terms, new TermComparator());
+		/** Sort in reverse of standard way */
+		Collections.sort(terms, new ReverseTermComparator());
 		
+		/** compute for doubles */
+		if (terms.size() > 0){
+			// Get the exponent of the highest term
+			int length = terms.get(terms.size() - 1).exponent + 1;
+			doubles = new double[length];
+			
+			int termIndex = 0;
+			for (int i = 0; i < length; i++){
+				try {
+					Term term = terms.get(termIndex);
+					if (term != null && term.exponent == i){
+						doubles[i] = term.coefficient;
+						
+						// Only move to the next term if the term has been encoded already
+						termIndex += 1;
+					}else
+						doubles[i] = 0;
+				}catch (ArrayIndexOutOfBoundsException e){
+					doubles[i] = 0;
+				}
+			}
+		}
+		
+		/** Sort in standard way */
+		Collections.sort(terms, new TermComparator());
 	}
 	
 	public Polynomial(double[] coefficients) throws Exception{
