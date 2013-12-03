@@ -9,6 +9,7 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
@@ -34,7 +35,7 @@ public class ParameterPanel extends JPanel implements ActionListener{
 	private static final long serialVersionUID = 1L;
 	private JTextField inputTerm;
 	private JLabel outputPolynomial;
-
+	private View view;
 	private JButton btnAddTerm;
 	private JButton btnGraph;
 	
@@ -52,7 +53,8 @@ public class ParameterPanel extends JPanel implements ActionListener{
 	private JButton btnReset;
 
 
-	public ParameterPanel() {
+	public ParameterPanel(View view) {
+		this.view = view;
 		/** Initialize the panel */
 		setPreferredSize(new Dimension(400, 300));
 		setLayout(new FlowLayout(FlowLayout.CENTER));
@@ -106,7 +108,19 @@ public class ParameterPanel extends JPanel implements ActionListener{
 		currentPolynomial = new Polynomial(new ArrayList<Term>());
 		outputPolynomial.setText(currentPolynomial.toString());
 	}
-
+	
+	public Dimension getDimensions(String size){
+		
+		if(size.equalsIgnoreCase("small"))
+			return smallDimension;
+		else if(size.equalsIgnoreCase("medium"))
+			return mediumDimension;	
+		else if(size.equalsIgnoreCase("wide"))
+			return wideDimension;
+		else
+		return null;
+		
+	}
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		Object target = e.getSource();
@@ -119,6 +133,12 @@ public class ParameterPanel extends JPanel implements ActionListener{
 		else if (target.equals(btnGraph)){
 			GraphParameters parameters = new GraphParameters(currentPolynomial);
 			graphListener.GraphRequested(parameters);
+		}
+		else if(target.equals(view.getBtnNext())){
+			view.nextButton();
+		}
+		else if(target.equals(view.getBtnPrev())){
+			view.prevButton();
 		}
 	}
 	
@@ -208,7 +228,13 @@ public class ParameterPanel extends JPanel implements ActionListener{
 		button.addActionListener(listener);
 		return button;
 	}
-	
+	public JButton newButton(ImageIcon img, ActionListener listener){
+		JButton button = new JButton(img);
+		button.setFocusable(false);
+		button.setPreferredSize(smallDimension);
+		button.addActionListener(listener);
+		return button;
+	}
 	
 	public class KeyHandler extends KeyAdapter{ 
 		@Override
