@@ -6,8 +6,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -17,6 +19,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 
 import model.polynomial.Polynomial;
 import model.polynomial.Term;
@@ -83,8 +86,11 @@ public class ParameterPanel extends JPanel implements ActionListener{
 		btnGraph = newButton("Graph", this);
 		add(btnGraph);
 		
+		btnReset.setMnemonic(java.awt.event.KeyEvent.VK_R);
+		btnGraph.setMnemonic(java.awt.event.KeyEvent.VK_G);
 		
 
+		
 		/** Initialize methods available */
 		JLabel lblMethod = newLabel("Select a method");
 		add(lblMethod);
@@ -109,6 +115,7 @@ public class ParameterPanel extends JPanel implements ActionListener{
 		outputPolynomial.setText(currentPolynomial.toString());
 	}
 	
+	
 	public Dimension getDimensions(String size){
 		
 		if(size.equalsIgnoreCase("small"))
@@ -127,8 +134,11 @@ public class ParameterPanel extends JPanel implements ActionListener{
 		if (target.equals(btnAddTerm))
 			AddTerm();
 		
-		else if (target.equals(btnReset))
+		else if (target.equals(btnReset)){
 			InitializeParameters();
+			view.resetGraph();
+			
+		}
 		
 		else if (target.equals(btnGraph)){
 			GraphParameters parameters = new GraphParameters(currentPolynomial);
@@ -140,6 +150,7 @@ public class ParameterPanel extends JPanel implements ActionListener{
 		else if(target.equals(view.getBtnPrev())){
 			view.prevButton();
 		}
+		
 	}
 	
 	

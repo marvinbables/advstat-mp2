@@ -14,7 +14,13 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 import javax.xml.bind.Marshaller.Listener;
+
+
+
 
 import org.jfree.data.function.PolynomialFunction2D;
 
@@ -25,11 +31,13 @@ import view.listeners.MenuListener;
 @SuppressWarnings("serial")
 public class View extends JFrame implements GraphListener{
 	private ParameterPanel parameterPanel;
-	private JPanel graphPanel, btnPanel, tablePanel;
+	private JPanel graphPanel, btnPanel, tablePanel, buttomPanel;
 	private PolynomialGraph graph;
 	private JButton btnNext, btnPrev;
 	private ImageIcon imgNext, imgPrev;
-	
+	private DefaultTableModel tblModel;
+	private JTable tblInfo;
+	private JScrollPane scroll;
 	
 	public View() {
 		super("Roots of Polynomials");
@@ -61,36 +69,54 @@ public class View extends JFrame implements GraphListener{
 		parameterPanel.setGraphListener(this);
 		add(parameterPanel);
 		
+		buttomPanel = new JPanel();
+		buttomPanel.setBorder(BorderFactory.createEtchedBorder());
+		buttomPanel.setPreferredSize(new Dimension(430, 400));
+		
+		
 		graphPanel = new JPanel();
 		graphPanel.setBorder(BorderFactory.createEtchedBorder());
-		graphPanel.setPreferredSize(new Dimension(430, 400));
-		add(graphPanel);
+		graphPanel.setPreferredSize(new Dimension(430, 310));
+		
+		tablePanel = new JPanel();
+	//	tablePanel.setBorder(BorderFactory.createEtchedBorder());
+		tablePanel.setPreferredSize(new Dimension(430, 310));
 		
 		imgNext = new ImageIcon("icons/next.png");
 		imgPrev = new ImageIcon("icons/prev.png");
 		
 		btnPanel = new JPanel();
-		btnPanel.setPreferredSize(new Dimension(200,50));
+	//	btnPanel.setPreferredSize(new Dimension(200,50));
 		btnPanel.setLayout(new BoxLayout(btnPanel, BoxLayout.X_AXIS));
 		
-		tablePanel = new JPanel();
-		tablePanel.setPreferredSize(new Dimension(430, 400));
-		tablePanel.setLayout(new BoxLayout(tablePanel, BoxLayout.Y_AXIS));
 		
+		tblModel = setupTable();
+		tblInfo = new JTable(tblModel);
+	//	tblInfo.setPreferredSize(new Dimension(400,370));
 		
+		scroll = new JScrollPane(tblInfo, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scroll.setPreferredSize(new Dimension(420, 300));
+	
+		tablePanel.add(scroll);
 		
 		btnNext = parameterPanel.newButton(imgNext, parameterPanel);
-		
 		
 		btnPrev = parameterPanel.newButton(imgPrev, parameterPanel);
 		btnPrev.setEnabled(false);
 		
+		btnNext.setMnemonic(java.awt.event.KeyEvent.VK_RIGHT);
+		btnPrev.setMnemonic(java.awt.event.KeyEvent.VK_LEFT);
+		
+
 		btnPanel.add(btnPrev);
 		btnPanel.add(Box.createRigidArea(parameterPanel.getDimensions("small")));
 		btnPanel.add(btnNext);
 		
 		add(btnPanel);
 		
+	//	add(graphPanel);
+		buttomPanel.add(graphPanel);
+		add(buttomPanel);
 		
 		pack(); 
 		setLocationRelativeTo(null);
@@ -98,18 +124,24 @@ public class View extends JFrame implements GraphListener{
 	}
 	
 	public void nextButton(){
-		add(tablePanel);
-		remove(graphPanel);
+		
+		buttomPanel.remove(graphPanel);
+		buttomPanel.add(tablePanel);
 		btnNext.setEnabled(false);
 		btnPrev.setEnabled(true);
+		validate();
 	}
 	public void prevButton(){
-		add(graphPanel);
-		remove(tablePanel);
+		
+		buttomPanel.remove(tablePanel);
+		buttomPanel.add(graphPanel);
 		btnNext.setEnabled(true);
 		btnPrev.setEnabled(false);
+		validate();
 	}
-	
+	public void resetGraph(){
+		buttomPanel.remove(graphPanel);
+	}
 	public JButton getBtnNext() {
 		return btnNext;
 	}
@@ -139,6 +171,30 @@ public class View extends JFrame implements GraphListener{
 		graphPanel.add(graph.getChart());
 		validate();
 		repaint();
+	}
+	private DefaultTableModel setupTable(){
+		return new DefaultTableModel(
+				new Object[][] {
+				},
+				new String[] {
+					"x0", "x1", "x2", "y0", "y1", "y2"
+						}
+				
+			) {
+		
+			@SuppressWarnings("rawtypes")
+				Class[] columnTypes = new Class[] {
+					Double.class, Double.class, Double.class, Double.class, Double.class, Double.class
+				};
+			@SuppressWarnings({ "rawtypes", "unchecked" })
+				public Class getColumnClass(int columnIndex) {
+					return columnTypes[columnIndex];
+				}
+			    public boolean isCellEditable(int row, int column) {
+			        //all cells false
+			        return false;
+			    }
+			};
 	}
 	
 	public void addButtonActionListener(ActionListener l){
