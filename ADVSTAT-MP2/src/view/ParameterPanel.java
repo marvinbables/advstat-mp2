@@ -175,8 +175,12 @@ public class ParameterPanel extends JPanel implements ActionListener{
 			
 			text = text.replace("-x", "-1x");
 			text = text.replace("+x", "+1x");
+			
+		//	for(2 chips)
+			
 			text = text.substring(text.length() - 1).equalsIgnoreCase("x") ? text.replace("x", "x^1") : text;
 			
+
 			hasExponent = text.contains("^");
 			hasX = text.contains("x");
 			
@@ -188,12 +192,38 @@ public class ParameterPanel extends JPanel implements ActionListener{
 					exponent = 1;
 				else
 					exponent = 0;
+					
+				}
+
+			if(!hasX && hasExponent){
+				String [] toks = null;
+				text = text.replace("^", "x");
+				toks = text.split("x");
+				text = text.replace("x", "");
+				
+				int i = 1;
+				int val = Integer.parseInt(toks[0]);
+				while(i != Integer.parseInt(toks[1])){
+					val += val;
+					i++;
+				}
+				text = Integer.toString(val);
+				System.out.println("here " + text);
+				exponent = 0;
 			}
-			
+		
 			// Remove x and exponent, and split
-			text = text.replace("^", "");
-			text = text.trim();
-			String[] tokens = text.split("x");
+			String[] tokens = null;
+			
+			
+				text = text.replace("^", "");
+				text = text.trim();
+			
+				tokens = text.split("x");
+		
+		//	for(String s : tokens)
+		//			System.out.println("suangco " + s);
+			
 			
 			if (tokens.length == 0 || tokens[0].length() == 0 && hasX)
 				coefficient = 1;
@@ -202,6 +232,7 @@ public class ParameterPanel extends JPanel implements ActionListener{
 			if (coefficient == -1) coefficient = Double.parseDouble(tokens[0]);
 			
 			newTerm = new Term(coefficient, exponent);
+			
 			currentPolynomial = currentPolynomial.addTerm(newTerm);
 			outputPolynomial.setText(currentPolynomial.toString());
 		}catch(Exception err){

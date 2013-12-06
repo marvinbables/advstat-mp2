@@ -170,7 +170,7 @@ public class View extends JFrame implements GraphListener{
 		graph = new PolynomialGraph(new PolynomialFunction2D(c), "Sample graph", begin, end);
 		graphPanel.add(graph.getChart());
 		validate();
-		repaint();
+	//	repaint();
 	}
 	private DefaultTableModel setupTable(){
 		return new DefaultTableModel(

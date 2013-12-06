@@ -11,7 +11,6 @@ public class Term {
 		this.exponent = exponent;
 	}
 
-	
 	@Override
 	public String toString(){
 		return getCoefficient() + getVariable() + getExponentText();
