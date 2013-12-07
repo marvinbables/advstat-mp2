@@ -11,6 +11,7 @@ import java.util.ArrayList;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -36,11 +37,11 @@ public class ParameterPanel extends JPanel implements ActionListener{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private JTextField inputTerm;
-	private JLabel outputPolynomial;
+	private JTextField inputTerm, leftInterval, rightInterval;
+	private JLabel outputPolynomial, outputInterval;
 	private View view;
 	private JButton btnAddTerm;
-	private JButton btnGraph;
+	private JButton btnGraph, btnInterval;
 	
 	private JComboBox<String> cmbxMethod;
 	
@@ -48,13 +49,15 @@ public class ParameterPanel extends JPanel implements ActionListener{
 	private int selectedMethod;
 	
 	private static final boolean SHOW_BORDER = false;
-
+	
+	private Dimension petiteDimension = new Dimension(50, 30);
 	private Dimension smallDimension = new Dimension(100, 30);
 	private Dimension mediumDimension = new Dimension(200, 30);
 	private Dimension wideDimension = new Dimension(420, 50);
+	private Dimension medwideDimension = new Dimension(200, 50);
 	private GraphListener graphListener;
 	private JButton btnReset;
-
+	
 
 	public ParameterPanel(View view) {
 		this.view = view;
@@ -66,24 +69,29 @@ public class ParameterPanel extends JPanel implements ActionListener{
 		/** Initialize components */
 		outputPolynomial = newLabel("");
 		outputPolynomial.setBorder(BorderFactory.createTitledBorder("Current Polynomial"));
-		outputPolynomial.setPreferredSize(wideDimension);
+		outputPolynomial.setPreferredSize(medwideDimension);
 		add(outputPolynomial);
+		
+		outputInterval = newLabel("");
+		outputInterval.setBorder(BorderFactory.createTitledBorder("Current Intervals"));
+		outputInterval.setPreferredSize(medwideDimension);
+		add(outputInterval);
 
 		/** Initialize parameters */
 		InitializeParameters();
 		
-		inputTerm = newInput("e.g. 4x^2");
+		inputTerm = newInput("e.g. 4x^2", mediumDimension);
 		inputTerm.setPreferredSize(smallDimension);
 		inputTerm.addKeyListener(new KeyHandler());
 		add(inputTerm);
 
-		btnAddTerm = newButton("Add term", this);
+		btnAddTerm = newButton("Add term", this, smallDimension);
 		add(btnAddTerm);
 
-		btnReset = newButton("Reset", this);
+		btnReset = newButton("Reset", this, smallDimension);
 		add(btnReset);
 		
-		btnGraph = newButton("Graph", this);
+		btnGraph = newButton("Graph", this, smallDimension);
 		add(btnGraph);
 		
 		btnReset.setMnemonic(java.awt.event.KeyEvent.VK_R);
@@ -103,7 +111,34 @@ public class ParameterPanel extends JPanel implements ActionListener{
 			public void actionPerformed(ActionEvent e) { selectedMethod = cmbxMethod.getSelectedIndex(); }
 			});
 		add(cmbxMethod);
-
+		
+		JLabel lblInterval = new JLabel("Interval : [");
+		lblInterval.setPreferredSize(new Dimension(60, 30));
+		add(lblInterval);
+		
+		leftInterval = newInput("e.g. 2", petiteDimension);
+		leftInterval.addKeyListener(new KeyHandler());
+		add(leftInterval);
+		
+		JLabel label = new JLabel(",");
+		label.setPreferredSize(new Dimension(8, 30));
+		add(label);
+		
+		rightInterval = newInput("e.g. 4", petiteDimension);
+		rightInterval.addKeyListener(new KeyHandler());
+		add(rightInterval);
+		
+		JLabel label1 = new JLabel("]");
+		label1.setPreferredSize(new Dimension(15, 30));
+		add(label1);
+		
+		btnInterval = newButton("Add Interval", this, mediumDimension); //new Dimension(120, 30));
+		add(btnInterval);
+		
+		btnInterval.setMnemonic(java.awt.event.KeyEvent.VK_I);
+		
+	//	add(Box.createRigidArea(new Dimension(80, 30)));
+		
 		if(SHOW_BORDER) {
 			outputPolynomial.setBorder(BorderFactory.createEtchedBorder());
 			
@@ -137,7 +172,6 @@ public class ParameterPanel extends JPanel implements ActionListener{
 		else if (target.equals(btnReset)){
 			InitializeParameters();
 			view.resetGraph();
-			
 		}
 		
 		else if (target.equals(btnGraph)){
@@ -151,12 +185,47 @@ public class ParameterPanel extends JPanel implements ActionListener{
 			view.prevButton();
 		}
 		
+		else if (target.equals(btnInterval) || target.equals(rightInterval)){
+			AddInterval();
+				
+		}
+		
+			
 	}
 	
 	
+	private void AddInterval(){
+		System.out.println(leftInterval.getText() + " " + rightInterval.getText());
+		if((isInputwrong("numbers only", leftInterval.getText()) && isInputwrong("numbers only", rightInterval.getText())))
+			JOptionPane.showMessageDialog(this, "Please follow the format : Numbers only" , "Input error", JOptionPane.ERROR_MESSAGE);
+		
+		else{
+			if(!leftInterval.getText().equals("") && !rightInterval.getText().equals(""))
+			outputInterval.setText("[" + Integer.parseInt(leftInterval.getText()) + " ," + Integer.parseInt(rightInterval.getText()) + "]" );
+			else{
+				if(leftInterval.getText().equals(""))
+					JOptionPane.showMessageDialog(this, "Missing input : left Interval" , "Input error", JOptionPane.ERROR_MESSAGE);
+				else	JOptionPane.showMessageDialog(this, "Missing input : right Interval" , "Input error", JOptionPane.ERROR_MESSAGE);
+			}
+		}
+	}
 	
-	
-	
+	private boolean isInputwrong(String s, String field){
+		boolean error = false;
+		char input[] = field.toCharArray();
+		
+		if(s.equalsIgnoreCase("Numbers Only")){
+			
+			for(int j = 0; j < input.length; j++){
+				if (((input[j] < '0') || (input[j] > '9')))
+						error = true;
+				System.out.println(input[j] + "" + error);
+				}
+				
+			}
+		return error;
+			
+	}
 	
 	
 	private void AddTerm() {
@@ -208,7 +277,6 @@ public class ParameterPanel extends JPanel implements ActionListener{
 					i++;
 				}
 				text = Integer.toString(val);
-				System.out.println("here " + text);
 				exponent = 0;
 			}
 		
@@ -220,10 +288,6 @@ public class ParameterPanel extends JPanel implements ActionListener{
 				text = text.trim();
 			
 				tokens = text.split("x");
-		
-		//	for(String s : tokens)
-		//			System.out.println("suangco " + s);
-			
 			
 			if (tokens.length == 0 || tokens[0].length() == 0 && hasX)
 				coefficient = 1;
@@ -247,9 +311,9 @@ public class ParameterPanel extends JPanel implements ActionListener{
 		graphListener = listener;
 	}
 	
-	public JFormattedTextField newInput(String inputHint){
+	public JFormattedTextField newInput(String inputHint, Dimension dim){
 		JXFormattedTextField txtField = new JXFormattedTextField(inputHint);
-		txtField.setPreferredSize(mediumDimension);
+		txtField.setPreferredSize(dim);
 		return txtField;
 	}
 
@@ -263,10 +327,10 @@ public class ParameterPanel extends JPanel implements ActionListener{
 		return newLabel(null);
 	}
 
-	public JButton newButton(String string, ActionListener listener){
+	public JButton newButton(String string, ActionListener listener, Dimension dimension){
 		JButton button = new JButton(string);
 		button.setFocusable(false);
-		button.setPreferredSize(smallDimension);
+		button.setPreferredSize(dimension);
 		button.addActionListener(listener);
 		return button;
 	}
@@ -281,7 +345,7 @@ public class ParameterPanel extends JPanel implements ActionListener{
 	public class KeyHandler extends KeyAdapter{ 
 		@Override
 		public void keyPressed(KeyEvent e) {
-			if (e.getKeyCode() == KeyEvent.VK_ENTER){
+			if (e.getKeyCode() == KeyEvent.VK_ENTER && inputTerm.hasFocus()){
 				ParameterPanel.this.actionPerformed(new ActionEvent(btnAddTerm, ActionEvent.ACTION_PERFORMED, "Add a term"));
 			}
 			super.keyPressed(e);
