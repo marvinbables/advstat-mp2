@@ -26,6 +26,8 @@ import javax.xml.bind.Marshaller.Listener;
 
 
 
+
+
 import model.Iteration;
 
 import org.jfree.data.function.PolynomialFunction2D;
@@ -136,6 +138,7 @@ public class View extends JFrame implements GraphListener{
 		btnNext.setEnabled(false);
 		btnPrev.setEnabled(true);
 		validate();
+		repaint();
 	}
 	public void prevButton(){
 		
@@ -144,9 +147,11 @@ public class View extends JFrame implements GraphListener{
 		btnNext.setEnabled(true);
 		btnPrev.setEnabled(false);
 		validate();
+		repaint();
 	}
 	public void resetGraph(){
 		buttomPanel.remove(graphPanel);
+		resetTable();
 	}
 	public JButton getBtnNext() {
 		return btnNext;
@@ -213,21 +218,30 @@ public class View extends JFrame implements GraphListener{
 	}
 
 	public void setTable(ArrayList<Iteration> iterations) {
-		ArrayList<TableColumn> column;
-
-		int i = 0;
+		Double[][] rowEntries = new Double[iterations.size()][7];
 		
+		if (iterations.size() == 0)
+			rowEntries = null;
 		
-		
-		while(i < iterations.size()){
+		for (int i = 0; i < iterations.size(); i++){
+			Iteration x = iterations.get(i);
+			rowEntries[i][0] = x.getX0();
+			rowEntries[i][1] = x.getX1();
+			rowEntries[i][2] = x.getX2();
+			rowEntries[i][3] = x.getY0();
+			rowEntries[i][4] = x.getY1();
+			rowEntries[i][5] = x.getY2();
 			
+			
+			tblModel.addRow(rowEntries[i]);
 			
 			
 		}
-		//tblInfo.addColumn(aColumn);
 		
-			
-		
+	}
+	private void resetTable(){
+		while(tblModel.getRowCount() > 0)
+			tblModel.removeRow(0);
 		
 	}
 	

@@ -48,7 +48,7 @@ public class ParameterPanel extends JPanel implements ActionListener{
 	private JButton btnGraph, btnInterval, btnIteration, btnTable;
 	private Model m = new Model();
 	private ArrayList<Iteration> iterations;
-	
+	private boolean haveError = false;
 	private JComboBox<String> cmbxMethod;
 	
 	private Polynomial currentPolynomial;
@@ -191,10 +191,13 @@ public class ParameterPanel extends JPanel implements ActionListener{
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		Object target = e.getSource();
-		if (target.equals(btnAddTerm) || target.equals(inputTerm))
+		if (target.equals(btnAddTerm) || target.equals(inputTerm)){
+			haveError = false;
 			AddTerm();
+		}
 		
 		else if (target.equals(btnReset)){
+			haveError = false;
 			InitializeParameters();
 			view.resetGraph();
 		}
@@ -211,13 +214,16 @@ public class ParameterPanel extends JPanel implements ActionListener{
 		}
 		
 		else if (target.equals(btnInterval) || target.equals(rightInterval) || target.equals(leftInterval)){
+			haveError = false;
 			AddInterval();
 				
 		}
 		else if(target.equals(btnIteration) || target.equals(txtIteration)){
+			haveError = false;
 			AddIteration();
 		}
 		else if(target.equals(btnTable)){
+			haveError = false;
 			generateTable();
 		}
 		
@@ -227,10 +233,13 @@ public class ParameterPanel extends JPanel implements ActionListener{
 			AddTerm();
 			AddInterval();
 			AddIteration();
-			m.compute(getInterval().getLeftInterval(), getInterval().getRightInterval(), getIterations(), getCurrentMethod());
-			iterations = m.getIterations();
-			view.setTable(iterations);
-			view.nextButton();
+			if(!haveError){
+				m.compute(getInterval().getLeftInterval(), getInterval().getRightInterval(), getIterations(), getCurrentMethod());
+				iterations = m.getIterations();
+				view.setTable(iterations);
+				view.nextButton();
+			}
+			
 			
 	}
 	
@@ -238,6 +247,7 @@ public class ParameterPanel extends JPanel implements ActionListener{
 	private void AddIteration(){
 		
 		if(!(CorrectInputs("numbers only", txtIteration.getText()))){
+			haveError = true;
 			JOptionPane.showMessageDialog(this, "Please follow the format : Numbers only" , "Input error", JOptionPane.ERROR_MESSAGE);
 			txtIteration.setBackground(Color.pink);
 		}
@@ -246,12 +256,10 @@ public class ParameterPanel extends JPanel implements ActionListener{
 	}
 	
 	private void AddInterval(){
-		System.out.println("left " + leftInterval.getText() + " right " + rightInterval.getText());
-		System.out.println("left " + (CorrectInputs("numbers only", leftInterval.getText())) + " right " + CorrectInputs("numbers only", rightInterval.getText()));
 		
 		if(!(CorrectInputs("numbers only", leftInterval.getText()) && CorrectInputs("numbers only", rightInterval.getText()))){
 			JOptionPane.showMessageDialog(this, "Please follow the format : Numbers only" , "Input error", JOptionPane.ERROR_MESSAGE);
-			
+			haveError = true;
 			if(!CorrectInputs("numbers only", leftInterval.getText()))
 				leftInterval.setBackground(Color.pink);	
 			if(!CorrectInputs("numbers only", rightInterval.getText()))
@@ -268,6 +276,7 @@ public class ParameterPanel extends JPanel implements ActionListener{
 			currentInterval = new Interval(Double.parseDouble(leftInterval.getText()), Double.parseDouble(rightInterval.getText()));
 			}
 			else{
+				haveError = true;
 				if(leftInterval.getText().equals(""))
 					JOptionPane.showMessageDialog(this, "Missing input : left Interval" , "Input error", JOptionPane.ERROR_MESSAGE);
 				else	JOptionPane.showMessageDialog(this, "Missing input : right Interval" , "Input error", JOptionPane.ERROR_MESSAGE);
@@ -286,12 +295,10 @@ public class ParameterPanel extends JPanel implements ActionListener{
 			for(int j = 0; j < input.length; j++){
 				
 				if (((input[j] >= '0') && (input[j] <= '9') )){
-					System.out.println("if num " + input[j]);
 					number = true;
 					correct = true;
 				}
 				else if((input[j]) == '.'){
-					System.out.println("if dot " + input[j]);
 					if(isDouble)
 						correct = false;
 					else{
@@ -303,6 +310,8 @@ public class ParameterPanel extends JPanel implements ActionListener{
 			
 			
 			}
+		if(!correct)
+			haveError = true;
 		return correct;
 			
 	}
