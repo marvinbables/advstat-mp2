@@ -24,6 +24,8 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
 import model.Interval;
+import model.Iteration;
+import model.Model;
 import model.polynomial.Polynomial;
 import model.polynomial.Term;
 
@@ -44,6 +46,8 @@ public class ParameterPanel extends JPanel implements ActionListener{
 	private View view;
 	private JButton btnAddTerm;
 	private JButton btnGraph, btnInterval, btnIteration, btnTable;
+	private Model m = new Model();
+	private ArrayList<Iteration> iterations;
 	
 	private JComboBox<String> cmbxMethod;
 	
@@ -223,14 +227,14 @@ public class ParameterPanel extends JPanel implements ActionListener{
 			AddTerm();
 			AddInterval();
 			AddIteration();
-			
-			
+			m.compute(getInterval().getLeftInterval(), getInterval().getRightInterval(), getIterations(), getCurrentMethod());
+			iterations = m.getIterations();
+			view.setTable(iterations);
 			view.nextButton();
 			
-			
-			
 	}
-
+	
+	
 	private void AddIteration(){
 		
 		if(!(CorrectInputs("numbers only", txtIteration.getText()))){
@@ -259,8 +263,10 @@ public class ParameterPanel extends JPanel implements ActionListener{
 		else{
 			leftInterval.setBackground(Color.white);	rightInterval.setBackground(Color.white);
 			
-			if(!leftInterval.getText().equals("") && !rightInterval.getText().equals(""))
+			if(!leftInterval.getText().equals("") && !rightInterval.getText().equals("")){
 			outputInterval.setText("[" + Double.parseDouble(leftInterval.getText()) + " ," + Double.parseDouble(rightInterval.getText()) + "]" );
+			currentInterval = new Interval(Double.parseDouble(leftInterval.getText()), Double.parseDouble(rightInterval.getText()));
+			}
 			else{
 				if(leftInterval.getText().equals(""))
 					JOptionPane.showMessageDialog(this, "Missing input : left Interval" , "Input error", JOptionPane.ERROR_MESSAGE);
@@ -437,5 +443,17 @@ public class ParameterPanel extends JPanel implements ActionListener{
 	}
 	public Interval getInterval(){
 		return currentInterval;
+	}
+	public int getIterations(){
+		return Integer.parseInt(txtIteration.getText());
+	}
+	public int getCurrentMethod(){
+		int type = 0;
+		if(cmbxMethod.getSelectedItem().toString().equalsIgnoreCase("Regula Falsi"))
+				type = 0;
+		else if(cmbxMethod.getSelectedItem().toString().equalsIgnoreCase("Secant"))
+				type = 1;
+		
+		return type;
 	}
 }

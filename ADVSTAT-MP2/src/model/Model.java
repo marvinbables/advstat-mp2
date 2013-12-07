@@ -9,7 +9,7 @@ public class Model {
 
 	ArrayList<Iteration> iterations = null;
 	
-	public void compute(int x0, int x1, int numIteration, int methodType) {
+	public void compute(double x0, double x1, int numIteration, int methodType) {
 		switch(methodType) {
 			// regula falsi
 			case 0: 
@@ -22,6 +22,10 @@ public class Model {
 				iterations = secant.compute(x0, x1);
 				break;
 		}
+	}
+	
+	public ArrayList<Iteration> getIterations(){
+		return iterations;
 	}
 	
 }

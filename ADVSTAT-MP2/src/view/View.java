@@ -2,6 +2,7 @@ package view;
 
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -17,10 +18,15 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 import javax.xml.bind.Marshaller.Listener;
 
 
 
+
+
+
+import model.Iteration;
 
 import org.jfree.data.function.PolynomialFunction2D;
 
@@ -204,6 +210,25 @@ public class View extends JFrame implements GraphListener{
 	@Override
 	public void GraphRequested(GraphParameters parameters) {
 		drawGraph(parameters, GraphParameters.StartX, GraphParameters.EndX);
+	}
+
+	public void setTable(ArrayList<Iteration> iterations) {
+		ArrayList<TableColumn> column;
+
+		int i = 0;
+		
+		
+		
+		while(i < iterations.size()){
+			
+			
+			
+		}
+		//tblInfo.addColumn(aColumn);
+		
+			
+		
+		
 	}
 	
 }
