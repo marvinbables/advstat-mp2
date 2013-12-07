@@ -1,5 +1,6 @@
 package view;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -37,11 +38,11 @@ public class ParameterPanel extends JPanel implements ActionListener{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private JTextField inputTerm, leftInterval, rightInterval;
+	private JTextField inputTerm, leftInterval, rightInterval, txtIteration;
 	private JLabel outputPolynomial, outputInterval;
 	private View view;
 	private JButton btnAddTerm;
-	private JButton btnGraph, btnInterval;
+	private JButton btnGraph, btnInterval, btnIteration, btnTable;
 	
 	private JComboBox<String> cmbxMethod;
 	
@@ -80,8 +81,7 @@ public class ParameterPanel extends JPanel implements ActionListener{
 		/** Initialize parameters */
 		InitializeParameters();
 		
-		inputTerm = newInput("e.g. 4x^2", mediumDimension);
-		inputTerm.setPreferredSize(smallDimension);
+		inputTerm = newInput("e.g. 4x^2", smallDimension);
 		inputTerm.addKeyListener(new KeyHandler());
 		add(inputTerm);
 
@@ -112,8 +112,8 @@ public class ParameterPanel extends JPanel implements ActionListener{
 			});
 		add(cmbxMethod);
 		
-		JLabel lblInterval = new JLabel("Interval : [");
-		lblInterval.setPreferredSize(new Dimension(60, 30));
+		JLabel lblInterval = new JLabel("Interval :  [");
+		lblInterval.setPreferredSize(new Dimension(70, 30));
 		add(lblInterval);
 		
 		leftInterval = newInput("e.g. 2", petiteDimension);
@@ -129,13 +129,32 @@ public class ParameterPanel extends JPanel implements ActionListener{
 		add(rightInterval);
 		
 		JLabel label1 = new JLabel("]");
-		label1.setPreferredSize(new Dimension(15, 30));
+		label1.setPreferredSize(new Dimension(10, 30));
 		add(label1);
 		
 		btnInterval = newButton("Add Interval", this, mediumDimension); //new Dimension(120, 30));
 		add(btnInterval);
 		
 		btnInterval.setMnemonic(java.awt.event.KeyEvent.VK_I);
+		
+		label1 = new JLabel("Iterations : ");
+		label1.setPreferredSize(new Dimension(70, 30));
+		add(label1);
+		
+		txtIteration = newInput("e.g. 4", petiteDimension);
+		txtIteration.addKeyListener(new KeyHandler());
+		add(txtIteration);
+		
+		add(Box.createRigidArea(new Dimension(80, 30)));
+		
+		btnIteration = newButton("Add Iteration", this, mediumDimension); 
+		add(btnIteration);
+		
+		add(Box.createRigidArea(new Dimension(210, 30)));
+		
+		btnTable = newButton("Generate Table", this, mediumDimension); 
+		add(btnTable);
+		
 		
 	//	add(Box.createRigidArea(new Dimension(80, 30)));
 		
@@ -166,7 +185,7 @@ public class ParameterPanel extends JPanel implements ActionListener{
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		Object target = e.getSource();
-		if (target.equals(btnAddTerm))
+		if (target.equals(btnAddTerm) || target.equals(inputTerm))
 			AddTerm();
 		
 		else if (target.equals(btnReset)){
@@ -185,21 +204,58 @@ public class ParameterPanel extends JPanel implements ActionListener{
 			view.prevButton();
 		}
 		
-		else if (target.equals(btnInterval) || target.equals(rightInterval)){
+		else if (target.equals(btnInterval) || target.equals(rightInterval) || target.equals(leftInterval)){
 			AddInterval();
 				
+		}
+		else if(target.equals(btnIteration) || target.equals(txtIteration)){
+			AddIteration();
+		}
+		else if(target.equals(btnTable)){
+			generateTable();
 		}
 		
 			
 	}
-	
+	private void generateTable(){
+			AddTerm();
+			AddInterval();
+			AddIteration();
+			
+			
+			view.nextButton();
+			
+			
+			
+	}
+	private void AddIteration(){
+		
+		if(!(CorrectInputs("numbers only", txtIteration.getText()))){
+			JOptionPane.showMessageDialog(this, "Please follow the format : Numbers only" , "Input error", JOptionPane.ERROR_MESSAGE);
+			txtIteration.setBackground(Color.pink);
+		}
+		txtIteration.setBackground(Color.white);
+		
+	}
 	
 	private void AddInterval(){
-		System.out.println(leftInterval.getText() + " " + rightInterval.getText());
-		if((isInputwrong("numbers only", leftInterval.getText()) && isInputwrong("numbers only", rightInterval.getText())))
+		System.out.println("left " + leftInterval.getText() + " right " + rightInterval.getText());
+		System.out.println("left " + (CorrectInputs("numbers only", leftInterval.getText())) + " right " + CorrectInputs("numbers only", rightInterval.getText()));
+		
+		if(!(CorrectInputs("numbers only", leftInterval.getText()) && CorrectInputs("numbers only", rightInterval.getText()))){
 			JOptionPane.showMessageDialog(this, "Please follow the format : Numbers only" , "Input error", JOptionPane.ERROR_MESSAGE);
+			
+			if(!CorrectInputs("numbers only", leftInterval.getText()))
+				leftInterval.setBackground(Color.pink);	
+			if(!CorrectInputs("numbers only", rightInterval.getText()))
+				rightInterval.setBackground(Color.pink);
+				
+		}
+		
 		
 		else{
+			leftInterval.setBackground(Color.white);	rightInterval.setBackground(Color.white);
+			
 			if(!leftInterval.getText().equals("") && !rightInterval.getText().equals(""))
 			outputInterval.setText("[" + Integer.parseInt(leftInterval.getText()) + " ," + Integer.parseInt(rightInterval.getText()) + "]" );
 			else{
@@ -210,26 +266,28 @@ public class ParameterPanel extends JPanel implements ActionListener{
 		}
 	}
 	
-	private boolean isInputwrong(String s, String field){
-		boolean error = false;
+	private boolean CorrectInputs(String s, String field){
+		boolean correct = true;
 		char input[] = field.toCharArray();
 		
 		if(s.equalsIgnoreCase("Numbers Only")){
 			
 			for(int j = 0; j < input.length; j++){
 				if (((input[j] < '0') || (input[j] > '9')))
-						error = true;
-				System.out.println(input[j] + "" + error);
+						correct = false;
 				}
 				
 			}
-		return error;
+		return correct;
 			
 	}
 	
 	
 	private void AddTerm() {
 		Term newTerm = null;
+		
+		inputTerm.setBackground(Color.white);
+		
 		
 		/** Parsing */
 		try {
@@ -300,6 +358,7 @@ public class ParameterPanel extends JPanel implements ActionListener{
 			currentPolynomial = currentPolynomial.addTerm(newTerm);
 			outputPolynomial.setText(currentPolynomial.toString());
 		}catch(Exception err){
+			inputTerm.setBackground(Color.pink);
 			String problem = "Please follow the format: 4x^2!";
 			JOptionPane.showMessageDialog(this, problem, "Input error", JOptionPane.ERROR_MESSAGE);
 		}
@@ -314,6 +373,7 @@ public class ParameterPanel extends JPanel implements ActionListener{
 	public JFormattedTextField newInput(String inputHint, Dimension dim){
 		JXFormattedTextField txtField = new JXFormattedTextField(inputHint);
 		txtField.setPreferredSize(dim);
+		txtField.addActionListener(this);
 		return txtField;
 	}
 
@@ -343,13 +403,14 @@ public class ParameterPanel extends JPanel implements ActionListener{
 	}
 	
 	public class KeyHandler extends KeyAdapter{ 
-		@Override
-		public void keyPressed(KeyEvent e) {
+	
+	/*	public void keyPressed(KeyEvent e) {
 			if (e.getKeyCode() == KeyEvent.VK_ENTER && inputTerm.hasFocus()){
 				ParameterPanel.this.actionPerformed(new ActionEvent(btnAddTerm, ActionEvent.ACTION_PERFORMED, "Add a term"));
 			}
 			super.keyPressed(e);
 		}
+	
+*/
 	}
-
 }
