@@ -23,6 +23,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
+import model.Interval;
 import model.polynomial.Polynomial;
 import model.polynomial.Term;
 
@@ -47,6 +48,7 @@ public class ParameterPanel extends JPanel implements ActionListener{
 	private JComboBox<String> cmbxMethod;
 	
 	private Polynomial currentPolynomial;
+	private Interval currentInterval;
 	private int selectedMethod;
 	
 	private static final boolean SHOW_BORDER = false;
@@ -228,6 +230,7 @@ public class ParameterPanel extends JPanel implements ActionListener{
 			
 			
 	}
+
 	private void AddIteration(){
 		
 		if(!(CorrectInputs("numbers only", txtIteration.getText()))){
@@ -257,7 +260,7 @@ public class ParameterPanel extends JPanel implements ActionListener{
 			leftInterval.setBackground(Color.white);	rightInterval.setBackground(Color.white);
 			
 			if(!leftInterval.getText().equals("") && !rightInterval.getText().equals(""))
-			outputInterval.setText("[" + Integer.parseInt(leftInterval.getText()) + " ," + Integer.parseInt(rightInterval.getText()) + "]" );
+			outputInterval.setText("[" + Double.parseDouble(leftInterval.getText()) + " ," + Double.parseDouble(rightInterval.getText()) + "]" );
 			else{
 				if(leftInterval.getText().equals(""))
 					JOptionPane.showMessageDialog(this, "Missing input : left Interval" , "Input error", JOptionPane.ERROR_MESSAGE);
@@ -267,16 +270,32 @@ public class ParameterPanel extends JPanel implements ActionListener{
 	}
 	
 	private boolean CorrectInputs(String s, String field){
-		boolean correct = true;
+		boolean correct = false;
+		boolean isDouble = false;
+		boolean number = false;
 		char input[] = field.toCharArray();
 		
 		if(s.equalsIgnoreCase("Numbers Only")){
 			
 			for(int j = 0; j < input.length; j++){
-				if (((input[j] < '0') || (input[j] > '9')))
-						correct = false;
-				}
 				
+				if (((input[j] >= '0') && (input[j] <= '9') )){
+					System.out.println("if num " + input[j]);
+					number = true;
+					correct = true;
+				}
+				else if((input[j]) == '.'){
+					System.out.println("if dot " + input[j]);
+					if(isDouble)
+						correct = false;
+					else{
+						correct = true;
+						isDouble = true;
+					}
+					}
+				}
+			
+			
 			}
 		return correct;
 			
@@ -412,5 +431,11 @@ public class ParameterPanel extends JPanel implements ActionListener{
 		}
 	
 */
+	}
+	public Polynomial getPolynomial(){
+		return currentPolynomial;
+	}
+	public Interval getInterval(){
+		return currentInterval;
 	}
 }
