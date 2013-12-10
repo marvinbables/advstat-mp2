@@ -237,7 +237,7 @@ public class View extends JFrame implements GraphListener{
 		}
 		
 	}
-	private void resetTable(){
+	public void resetTable(){
 		while(tblModel.getRowCount() > 0)
 			tblModel.removeRow(0);
 		

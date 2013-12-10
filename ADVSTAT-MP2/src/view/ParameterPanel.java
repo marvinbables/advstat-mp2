@@ -244,6 +244,7 @@ public class ParameterPanel extends JPanel implements ActionListener{
 			if(!haveError){
 				m.compute(getInterval().getLeftInterval(), getInterval().getRightInterval(), getIterations(), getCurrentMethod());
 				iterations = m.getIterations();
+				view.resetTable();
 				view.setTable(iterations);
 				view.nextButton();
 			}
@@ -251,6 +252,7 @@ public class ParameterPanel extends JPanel implements ActionListener{
 			
 	}
 	
+	 
 	
 	private void AddIteration(){
 		
