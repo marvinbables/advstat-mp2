@@ -102,7 +102,7 @@ public class View extends JFrame implements GraphListener{
 		tblInfo = new JTable(tblModel);
 	//	tblInfo.setPreferredSize(new Dimension(400,370));
 		
-		scroll = new JScrollPane(tblInfo, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scroll = new JScrollPane(tblInfo, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scroll.setPreferredSize(new Dimension(420, 300));
 	
 		tablePanel.add(scroll);
@@ -232,10 +232,8 @@ public class View extends JFrame implements GraphListener{
 			rowEntries[i][4] = x.getY1();
 			rowEntries[i][5] = x.getY2();
 			
-			
 			tblModel.addRow(rowEntries[i]);
-			
-			
+			System.out.println(iterations.size());
 		}
 		
 	}

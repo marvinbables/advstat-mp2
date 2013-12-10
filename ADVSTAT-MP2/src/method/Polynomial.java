@@ -15,7 +15,7 @@ public class Polynomial {
 	/*
 	 * setEquation(1, 2, -78.8, 0);
 	 */
-	public static void setPolynomial(double... args) {
+	public static void setPolynomial(double[] args) {
 		if(args.length % 2 != 0) {
 			System.out.println("Number of parameters must be even.");
 			return;
