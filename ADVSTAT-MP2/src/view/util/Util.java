@@ -8,10 +8,6 @@ import javax.swing.text.JTextComponent;
 public class Util
 {
     
-    public enum ErrorMessage {
-        INPUT_NUMBERS_ONLY, COEFFICIENT_FORMAT, INPUT_PAIRS_FORMAT, CANNOT_GENERATE_TABLE
-    }
-
     /**
      * This function verifies whether the input 
      * contains only real numbers and spaces. 
@@ -76,6 +72,10 @@ public class Util
     }
     
 
+    public enum ErrorMessage {
+        INPUT_NUMBERS_ONLY, COEFFICIENT_FORMAT, INPUT_PAIRS_FORMAT, CANNOT_GENERATE_TABLE, NO_INTERVALS_SET
+    }
+
     /**
      * Displays an error message
      * @param s
@@ -99,6 +99,10 @@ public class Util
             break;
         case CANNOT_GENERATE_TABLE:
             s = "Cannot generate table: Please input all fields.";
+            break;
+        case NO_INTERVALS_SET:
+            s = "Cannot generate table: There are no intervals set.";
+            break;
         default:
             s = "";
             break;

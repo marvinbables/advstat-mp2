@@ -66,7 +66,7 @@ public class ParameterPanel extends JPanel
 
     private Polynomial           currentPolynomial;
     private Interval             currentInterval;
-    private int                  selectedMethod;
+    private int                  currentMethod;
 
     private GraphListener        graphListener;
 
@@ -115,13 +115,7 @@ public class ParameterPanel extends JPanel
         cmbxMethod.setPreferredSize(Size.Medium);
         cmbxMethod.addItem("Regula Falsi");
         cmbxMethod.addItem("Secant");
-        cmbxMethod.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                selectedMethod = cmbxMethod.getSelectedIndex();
-            }
-        });
+        cmbxMethod.addActionListener(action.Handler(ParameterAction.SET_METHOD));
         add(cmbxMethod);
 
         JLabel lblInterval = new JLabel("Interval :  [");
@@ -177,35 +171,22 @@ public class ParameterPanel extends JPanel
     {
         graphListener = listener;
     }
-
-    public Polynomial getPolynomial()
-    {
-        return currentPolynomial;
-    }
-
-    public Interval getInterval()
-    {
-        return currentInterval;
-    }
+    
 
     public int getIterations()
     {
-        return Integer.parseInt(txtIteration.getText());
+        try{return Integer.parseInt(txtIteration.getText());}
+        catch (Exception e){}return 0;
     }
 
     public int getCurrentMethod()
     {
-        String string = cmbxMethod.getSelectedItem().toString();
-        if (string.equalsIgnoreCase("Regula Falsi"))
-            return REGULA_FALSI;
-        if (string.equalsIgnoreCase("Secant"))
-            return SECANT;
-        return UNKNOWN_METHOD;
+        return currentMethod;
     }
     
     private enum ParameterAction
     {
-        ADD_TERM, ADD_INTERVAL, RESET, ADD_ITERATION, GRAPH, TABLE
+        ADD_TERM, ADD_INTERVAL, RESET, ADD_ITERATION, GRAPH, TABLE, SET_METHOD
     }
 
     private class ActionHandler
@@ -221,6 +202,7 @@ public class ParameterPanel extends JPanel
             case GRAPH:         return new Graph();
             case RESET:         return new Reset();
             case TABLE:         return new Table();
+            case SET_METHOD:    return new SetMethod();
 
             default:
                 break;
@@ -228,7 +210,22 @@ public class ParameterPanel extends JPanel
 
             return null;
         }
-        
+
+        public class SetMethod implements ActionListener
+        {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                String string = cmbxMethod.getSelectedItem().toString();
+                if (string.equalsIgnoreCase("Regula Falsi"))
+                    currentMethod = REGULA_FALSI;
+                if (string.equalsIgnoreCase("Secant"))
+                    currentMethod = SECANT;
+                currentMethod = UNKNOWN_METHOD;
+            }
+
+        }
         public class AddIteration implements ActionListener
         {
 
@@ -242,6 +239,7 @@ public class ParameterPanel extends JPanel
                 
                 
                 // BUT WHAT IS THIS SUPPOSED TO DO?!
+                // Mukhang error checking lang
             }
 
         }
@@ -267,11 +265,17 @@ public class ParameterPanel extends JPanel
                     Util.Error(ErrorMessage.CANNOT_GENERATE_TABLE);
                     return;
                 }
-                    
-                model.compute(getInterval().getLeftInterval(), getInterval().getRightInterval(), getIterations(), getCurrentMethod());
+                if (currentInterval == null){
+                    Util.Error(ErrorMessage.NO_INTERVALS_SET);
+                    return;
+                }
+                
+                
+                double left = currentInterval.getLeftInterval();
+                double right = currentInterval.getRightInterval();
+                model.compute(left, right, getIterations(), getCurrentMethod());
                 iterations = model.getIterations();
-                view.resetTable();
-                view.setTable(iterations, cmbxMethod.getSelectedItem().toString());
+                view.InitializeTable(iterations, getCurrentMethod());
                 
                 ActionEvent actionEvent = new ActionEvent(e.getSource(), e.getID(), e.getActionCommand());
                 view.fireActionEvent(ViewAction.NEXT, actionEvent);
@@ -463,7 +467,7 @@ public class ParameterPanel extends JPanel
                 hasError = false;
                 currentPolynomial = new Polynomial(new ArrayList<Term>());
                 outputPolynomial.setText(currentPolynomial.toString());
-                view.resetGraph();
+                view.ResetGraph();
             }
         }
 

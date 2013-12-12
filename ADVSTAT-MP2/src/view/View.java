@@ -48,7 +48,6 @@ public class View extends JFrame implements GraphListener
     private JButton            btnNext;
     private JButton            btnPrev;
 
-    private static int         numericalAnalysisApproach = -1;
 
     public View()
     {
@@ -172,7 +171,6 @@ public class View extends JFrame implements GraphListener
      */
     public void InitializeTable(int type)
     {
-        numericalAnalysisApproach = type;
         switch (type)
         {
         case ParameterPanel.REGULA_FALSI:
@@ -186,28 +184,6 @@ public class View extends JFrame implements GraphListener
             break;
         }
         tblInfo.setModel(tblModel);
-    }
-
-    public void resetGraph()
-    {
-        bottomPanel.remove(graphPanel);
-        resetTable();
-    }
-
-    public void drawGraph(GraphParameters parameters, double begin, double end)
-    {
-        graphPanel.removeAll();
-        if (parameters.polynomial.getTerms().size() == 0)
-        {
-            JOptionPane.showMessageDialog(this, "Invalid polynomial to graph.", "Invalid polynomial", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        double[] c = parameters.polynomial.getDoubles();
-        graph = new PolynomialGraph(new PolynomialFunction2D(c), "Graph of f(x)", begin, end, parameters.polynomial.toString());
-        graphPanel.add(graph.getChart());
-        validate();
-        // repaint();
     }
 
     private DefaultTableModel setupTableRegula()
@@ -261,14 +237,28 @@ public class View extends JFrame implements GraphListener
     @Override
     public void GraphRequested(GraphParameters parameters)
     {
-        drawGraph(parameters, GraphParameters.StartX, GraphParameters.EndX);
+        double begin = GraphParameters.StartX;
+        double end = GraphParameters.EndX;
+                graphPanel.removeAll();
+
+        if (parameters.polynomial.getTerms().size() == 0)
+        {
+            Util.Error("Invalid polynomial to graph.");
+            return;
+        }
+
+        double[] c = parameters.polynomial.getDoubles();
+        graph = new PolynomialGraph(new PolynomialFunction2D(c), "Graph of f(x)", begin, end, parameters.polynomial.toString());
+        graphPanel.add(graph.getChart());
+        
     }
 
-    public void setTable(ArrayList<Iteration> iterations, String type)
+    public void InitializeTable(ArrayList<Iteration> iterations, int type)
     {
+        ResetTable();
         Double[][] rowEntries;
         InitializeTable(parameterPanel.getCurrentMethod());
-        if (type.equalsIgnoreCase("Regula Falsi"))
+        if (type == ParameterPanel.REGULA_FALSI)
         {
             rowEntries = new Double[iterations.size()][7];
 
@@ -288,7 +278,7 @@ public class View extends JFrame implements GraphListener
                 tblModel.addRow(rowEntries[i]);
             }
         }
-        else if (type.equalsIgnoreCase("Secant"))
+        else if (type == ParameterPanel.SECANT)
         {
             rowEntries = new Double[iterations.size()][3];
 
@@ -306,11 +296,22 @@ public class View extends JFrame implements GraphListener
         }
     }
 
-    public void resetTable()
+    /**
+     * This method removes the graph and clears the table.
+     */
+    public void ResetGraph()
+    {
+        bottomPanel.remove(graphPanel);
+        ResetTable();
+    }
+
+    /**
+     * This method clears the table.
+     */
+    public void ResetTable()
     {
         while (tblModel.getRowCount() > 0)
             tblModel.removeRow(0);
-
     }
 
     public enum ViewAction
