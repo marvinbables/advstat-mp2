@@ -47,7 +47,7 @@ public class Polynomial {
 		Collections.sort(terms, new TermComparator());
 	}
 	
-	public Polynomial(double[] coefficients) throws Exception{
+	public Polynomial(double[] coefficients){
 		terms = new ArrayList<Term>();
 		for (int exponent = 0; exponent < coefficients.length; exponent++){
 			double currentCoefficient = coefficients[exponent];

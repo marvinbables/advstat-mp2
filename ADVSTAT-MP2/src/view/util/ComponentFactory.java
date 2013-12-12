@@ -17,8 +17,14 @@ public class ComponentFactory
     {
         JXFormattedTextField txtField = new JXFormattedTextField(inputHint);
         txtField.setPreferredSize(dim);
-        txtField.addActionListener(listener);
+        if (listener != null)
+            txtField.addActionListener(listener);
         return txtField;
+    }
+    
+    public static JFormattedTextField newInput(String inputHint, Dimension dim)
+    {
+        return newInput(inputHint, dim, null);
     }
 
     public static JLabel newLabel(String string)
@@ -47,7 +53,13 @@ public class ComponentFactory
         JButton button = new JButton(img);
         button.setFocusable(false);
         button.setPreferredSize(Size.Small);
-        button.addActionListener(listener);
+        if (listener != null)
+            button.addActionListener(listener);
         return button;
+    }
+    
+    public static JButton newButton(ImageIcon img)
+    {
+        return newButton(img, null);
     }
 }

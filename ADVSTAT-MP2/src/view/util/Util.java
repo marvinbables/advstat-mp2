@@ -9,7 +9,7 @@ public class Util
 {
     
     public enum ErrorMessage {
-        INPUT_NUMBERS_ONLY, COEFFICIENT_FORMAT, INPUT_PAIRS_FORMAT
+        INPUT_NUMBERS_ONLY, COEFFICIENT_FORMAT, INPUT_PAIRS_FORMAT, CANNOT_GENERATE_TABLE
     }
 
     /**
@@ -97,6 +97,8 @@ public class Util
         case INPUT_PAIRS_FORMAT:
             s = "Incorrect format: The input should be pairs.";
             break;
+        case CANNOT_GENERATE_TABLE:
+            s = "Cannot generate table: Please input all fields.";
         default:
             s = "";
             break;

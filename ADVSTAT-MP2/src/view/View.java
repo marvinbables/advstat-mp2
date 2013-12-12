@@ -1,6 +1,7 @@
 package view;
 
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
@@ -43,11 +44,14 @@ public class View extends JFrame implements GraphListener{
 	private ParameterPanel parameterPanel;
 	private JPanel graphPanel, btnPanel, tablePanel, buttomPanel;
 	private PolynomialGraph graph;
-	private JButton btnNext, btnPrev;
+	
+	public final ActionHandler action = new ActionHandler();
 	private ImageIcon imgNext, imgPrev;
 	private DefaultTableModel tblModel;
 	private JTable tblInfo;
 	private JScrollPane scroll;
+    private JButton btnNext;
+    private JButton btnPrev;
 	
 	public View() {
 		super("Roots of Polynomials");
@@ -110,13 +114,14 @@ public class View extends JFrame implements GraphListener{
 	
 		tablePanel.add(scroll);
 		
-		btnNext = ComponentFactory.newButton(imgNext, parameterPanel);
-		
-		btnPrev = ComponentFactory.newButton(imgPrev, parameterPanel);
-		btnPrev.setEnabled(false);
-		
+		btnNext = ComponentFactory.newButton(imgNext);
 		btnNext.setMnemonic(java.awt.event.KeyEvent.VK_RIGHT);
+		btnNext.addActionListener(action.Handle(ViewAction.NEXT));
+		
+		btnPrev = ComponentFactory.newButton(imgPrev);
+		btnPrev.setEnabled(false);
 		btnPrev.setMnemonic(java.awt.event.KeyEvent.VK_LEFT);
+		btnPrev.addActionListener(action.Handle(ViewAction.BACK));
 		
 
 		btnPanel.add(btnPrev);
@@ -134,48 +139,35 @@ public class View extends JFrame implements GraphListener{
 		setVisible(true);
 	}
 	
+	public void fireActionEvent(ViewAction e, ActionEvent actionEvent){
+	    ActionListener[] actionListeners;
+	    switch(e){
+        case BACK:
+            actionListeners = btnPrev.getActionListeners();
+            for (ActionListener actionListener : actionListeners)
+            {
+                actionListener.actionPerformed(actionEvent);
+            }
+            break;
+        case NEXT:
+            actionListeners = btnNext.getActionListeners();
+            for (ActionListener actionListener : actionListeners)
+            {
+                actionListener.actionPerformed(actionEvent);
+            }
+            break;
+	    }
+	}
+	
 	public void setUpTable(){
 		if(parameterPanel.regulaIsSelected())
 			tblModel = setupTableRegula();
 		else tblModel = setupTableSecant();
 			tblInfo.setModel(tblModel);
 	}
-	public void nextButton(){
-		
-		buttomPanel.remove(graphPanel);
-		buttomPanel.add(tablePanel);
-		btnNext.setEnabled(false);
-		btnPrev.setEnabled(true);
-		validate();
-		repaint();
-	}
-	public void prevButton(){
-		
-		buttomPanel.remove(tablePanel);
-		buttomPanel.add(graphPanel);
-		btnNext.setEnabled(true);
-		btnPrev.setEnabled(false);
-		validate();
-		repaint();
-	}
 	public void resetGraph(){
 		buttomPanel.remove(graphPanel);
 		resetTable();
-	}
-	public JButton getBtnNext() {
-		return btnNext;
-	}
-
-	public void setBtnNext(JButton btnNext) {
-		this.btnNext = btnNext;
-	}
-
-	public JButton getBtnPrev() {
-		return btnPrev;
-	}
-
-	public void setBtnPrev(JButton btnPrev) {
-		this.btnPrev = btnPrev;
 	}
 
 	public void drawGraph(GraphParameters parameters, double begin, double end){
@@ -240,10 +232,7 @@ public class View extends JFrame implements GraphListener{
 			    }
 			};
 	}
-	public void addButtonActionListener(ActionListener l){
-		btnNext.addActionListener(l);
-		btnPrev.addActionListener(l);
-	}
+	
 	@Override
 	public void GraphRequested(GraphParameters parameters) {
 		drawGraph(parameters, GraphParameters.StartX, GraphParameters.EndX);
@@ -291,4 +280,49 @@ public class View extends JFrame implements GraphListener{
 		
 	}
 	
+	public enum ViewAction {
+	    BACK, NEXT
+	}
+	
+	public class ActionHandler {
+	    
+	    public ActionListener Handle(ViewAction e){
+	        switch (e){
+            case BACK:
+                return new Back();
+            case NEXT:
+                return new Next();
+            default:
+                break;	        
+	        }
+	        return null;
+	    }
+	    
+        public final class Back implements ActionListener{
+            public void actionPerformed(ActionEvent e)
+            {
+                buttomPanel.remove(tablePanel);
+                buttomPanel.add(graphPanel);
+                btnNext.setEnabled(true);
+                btnPrev.setEnabled(false);
+                validate();
+                repaint();
+            }
+
+        }
+
+        public final class Next implements ActionListener
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                buttomPanel.remove(graphPanel);
+                buttomPanel.add(tablePanel);
+                btnNext.setEnabled(false);
+                btnPrev.setEnabled(true);
+                validate();
+                repaint();
+            }
+
+        }
+    }
 }

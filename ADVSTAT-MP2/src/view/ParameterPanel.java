@@ -22,6 +22,7 @@ import model.Iteration;
 import model.Model;
 import model.polynomial.Polynomial;
 import model.polynomial.Term;
+import view.View.ViewAction;
 import view.listeners.GraphListener;
 import view.listeners.GraphListener.GraphParameters;
 import view.util.ComponentFactory;
@@ -29,7 +30,7 @@ import view.util.Util;
 import view.util.Size;
 import view.util.Util.ErrorMessage;
 
-public class ParameterPanel extends JPanel implements ActionListener
+public class ParameterPanel extends JPanel
 {
 
     /**
@@ -46,16 +47,18 @@ public class ParameterPanel extends JPanel implements ActionListener
     private JButton              btnAddTerm;
     private JButton              btnGraph, btnInterval, btnIteration, btnTable;
     private JButton              btnReset;
-    
+
+    private final ActionHandler  action    = new ActionHandler();
+
     /* Why the fuck is this here */
-    private Model                m                = new Model();
+    private Model                model                = new Model();
     
     
     private ArrayList<Iteration> iterations;
     
     /* Error handling */
     private static final boolean SHOW_BORDER      = false;
-    private boolean              haveError        = false;
+    private boolean              hasError        = false;
     
     private JComboBox<String>    cmbxMethod;
 
@@ -87,20 +90,23 @@ public class ParameterPanel extends JPanel implements ActionListener
         /** Initialize parameters */
         InitializeParameters();
 
-        inputTerm = ComponentFactory.newInput("e.g. 4 3 2 1", Size.Small, this);
+        inputTerm = ComponentFactory.newInput("e.g. 4 3 2 1", Size.Small);
         add(inputTerm);
 
-        btnAddTerm = ComponentFactory.newButton("Add term", this, Size.Small);
+        btnAddTerm = ComponentFactory.newButton("Add term", action.Handler(ParameterAction.ADD_TERM), Size.Small);
+        btnAddTerm.setMnemonic(java.awt.event.KeyEvent.VK_A);
         add(btnAddTerm);
 
-        btnReset = ComponentFactory.newButton("Reset", this, Size.Small);
+        btnReset = ComponentFactory.newButton("Reset", action.Handler(ParameterAction.RESET), Size.Small);
+        btnReset.setMnemonic(java.awt.event.KeyEvent.VK_R);
         add(btnReset);
 
-        btnGraph = ComponentFactory.newButton("Graph", this, Size.Small);
+        btnGraph = ComponentFactory.newButton("Graph", action.Handler(ParameterAction.GRAPH), Size.Small);
+        btnGraph.setMnemonic(java.awt.event.KeyEvent.VK_G);
         add(btnGraph);
 
-        btnReset.setMnemonic(java.awt.event.KeyEvent.VK_R);
-        btnGraph.setMnemonic(java.awt.event.KeyEvent.VK_G);
+        
+        
 
         /** Initialize methods available */
         JLabel lblMethod = ComponentFactory.newLabel("Select a method");
@@ -123,23 +129,21 @@ public class ParameterPanel extends JPanel implements ActionListener
         lblInterval.setPreferredSize(new Dimension(70, 30));
         add(lblInterval);
 
-        leftInterval = ComponentFactory.newInput("e.g. 2", Size.Petite, this);
+        leftInterval = ComponentFactory.newInput("e.g. 2", Size.Petite);
         add(leftInterval);
 
         JLabel label = new JLabel(",");
         label.setPreferredSize(new Dimension(8, 30));
         add(label);
 
-        rightInterval = ComponentFactory.newInput("e.g. 4", Size.Petite, this);
+        rightInterval = ComponentFactory.newInput("e.g. 4", Size.Petite);
         add(rightInterval);
 
         JLabel label1 = new JLabel("]");
         label1.setPreferredSize(new Dimension(10, 30));
         add(label1);
 
-        btnInterval = ComponentFactory.newButton("Add Interval", this, Size.Medium); // new
-                                                                        // Dimension(120,
-                                                                        // 30));
+        btnInterval = ComponentFactory.newButton("Add Interval", action.Handler(ParameterAction.ADD_INTERVAL), Size.Medium);                                               // 30));
         add(btnInterval);
 
         btnInterval.setMnemonic(java.awt.event.KeyEvent.VK_I);
@@ -148,17 +152,17 @@ public class ParameterPanel extends JPanel implements ActionListener
         label1.setPreferredSize(new Dimension(70, 30));
         add(label1);
 
-        txtIteration = ComponentFactory.newInput("e.g. 4", Size.Petite, this);
+        txtIteration = ComponentFactory.newInput("e.g. 4", Size.Petite);
         add(txtIteration);
 
         add(Box.createRigidArea(new Dimension(80, 30)));
 
-        btnIteration = ComponentFactory.newButton("Add Iteration", this, Size.Medium);
+        btnIteration = ComponentFactory.newButton("Add Iteration", action.Handler(ParameterAction.ADD_ITERATION), Size.Medium);
         add(btnIteration);
 
         add(Box.createRigidArea(new Dimension(210, 30)));
 
-        btnTable = ComponentFactory.newButton("Generate Table", this, Size.Medium);
+        btnTable = ComponentFactory.newButton("Generate Table", action.Handler(ParameterAction.TABLE), Size.Medium);
         add(btnTable);
 
         // add(Box.createRigidArea(new Dimension(80, 30)));
@@ -172,78 +176,14 @@ public class ParameterPanel extends JPanel implements ActionListener
 
     private void InitializeParameters()
     {
-        currentPolynomial = new Polynomial(new ArrayList<Term>());
-        outputPolynomial.setText(currentPolynomial.toString());
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e)
-    {
-        Object target = e.getSource();
-        if (target.equals(btnAddTerm) || target.equals(inputTerm))
-        {
-            haveError = false;
-            AddTerm2();
-        }
-
-        else if (target.equals(btnReset))
-        {
-            haveError = false;
-            InitializeParameters();
-            view.resetGraph();
-        }
-
-        else if (target.equals(btnGraph))
-        {
-            view.prevButton();
-            GraphParameters parameters = new GraphParameters(currentPolynomial);
-            graphListener.GraphRequested(parameters);
-            validate();
-            repaint();
-        }
-        else if (target.equals(view.getBtnNext()))
-        {
-            view.nextButton();
-        }
-        else if (target.equals(view.getBtnPrev()))
-        {
-            view.prevButton();
-        }
-
-        else if (target.equals(btnInterval) || target.equals(rightInterval) || target.equals(leftInterval))
-        {
-            haveError = false;
-            AddInterval();
-
-        }
-        else if (target.equals(btnIteration) || target.equals(txtIteration))
-        {
-            haveError = false;
-            AddIteration();
-        }
-        else if (target.equals(btnTable))
-        {
-            haveError = false;
-            generateTable();
-        }
-
+        
     }
 
     private void generateTable()
     {
-        System.out.println(outputPolynomial.getText());
-        if (outputPolynomial.getText().equals(""))
-            AddTerm2();
-        if (outputInterval.getText().equals(""))
-            AddInterval();
-        AddIteration();
-        if (!haveError)
+        if (!hasError)
         {
-            m.compute(getInterval().getLeftInterval(), getInterval().getRightInterval(), getIterations(), getCurrentMethod());
-            iterations = m.getIterations();
-            view.resetTable();
-            view.setTable(iterations, cmbxMethod.getSelectedItem().toString());
-            view.nextButton();
+            
         }
 
     }
@@ -255,171 +195,8 @@ public class ParameterPanel extends JPanel implements ActionListener
 
     private void AddIteration()
     {
-        if (Util.isInputNumerical(txtIteration))
-            return;
-        haveError = true;
-        Util.Error(ErrorMessage.INPUT_NUMBERS_ONLY);
-    }
-
-    private void AddInterval()
-    {
-        /* Check for missing input errors */
-        boolean leftHasInput, rightHasInput;
-        leftHasInput = Util.hasInput(leftInterval);
-        rightHasInput = Util.hasInput(rightInterval);
-        if (leftHasInput && rightHasInput == false)
-        {   
-            Util.Error("Missing input : " + (leftHasInput ? "Left interval" : "Right interval") );
-            haveError = true;
-            return;
-        }
-        
-        /* Check for number format errors */
-        boolean hasFormatError = false;
-        hasFormatError = hasFormatError || Util.isInputNumerical(leftInterval);
-        hasFormatError = hasFormatError || Util.isInputNumerical(rightInterval);
-        if (hasFormatError)
-        {   
-            Util.Error("Please follow the format : Numbers only");
-            haveError = true;
-            return;
-        }
-        
-        double left = Double.parseDouble(leftInterval.getText());
-        double right = Double.parseDouble(rightInterval.getText());
-        outputInterval.setText("[" + left + " ," + right + "]");
-        currentInterval = new Interval(left, right);
-        
-    }
-
-    private void AddTerm2()
-    {
-        // Check if the input are numbers
-        boolean inputNumerical = Util.isInputNumerical(inputTerm);
-        if (inputNumerical == false)
-        {
-            Util.Error(ErrorMessage.COEFFICIENT_FORMAT);
-            return;
-        }
-
-        // Check if the input are in pairs
-        String inputText = inputTerm.getText();
-        String[] array = inputText.split(" ");
-        double[] input = new double[array.length];
-
-        if (array.length % 2 == 1)
-        {
-            Util.Error(ErrorMessage.INPUT_PAIRS_FORMAT);
-            return;
-        }
-
-        // Parse the values of the pairs
-        int i = 0;
-        while (i < array.length)
-            input[i] = Double.parseDouble(array[i++]);
-
-        method.Polynomial.setPolynomial(input);
-        outputPolynomial.setText(inputText);
-
-        // Set the current polynomial
-        Term newTerm;
-        double coefficient;
-        for (i = 0; i < array.length; i += 2)
-        {
-            coefficient = input[i];
-            newTerm = new Term(coefficient, (int) input[i + 1]);
-            currentPolynomial = currentPolynomial.addTerm(newTerm);
-        }
 
     }
-
-    private void AddTerm()
-    {
-        Term newTerm = null;
-
-        inputTerm.setBackground(Color.white);
-
-        /** Parsing */
-        try
-        {
-            double coefficient = -1;
-            int exponent = -1;
-            boolean hasX = false;
-            boolean hasExponent = false;
-
-            String text = inputTerm.getText();
-            text = text.toLowerCase();
-
-            text = text.replace("-x", "-1x");
-            text = text.replace("+x", "+1x");
-
-            // for(2 chips)
-
-            text = text.substring(text.length() - 1).equalsIgnoreCase("x") ? text.replace("x", "x^1") : text;
-
-            hasExponent = text.contains("^");
-            hasX = text.contains("x");
-
-            if (text.contains("+") || text.contains("e") || text.contains("*") || text.contains("/"))
-                throw new Exception("Invalid!");
-
-            if (!hasExponent)
-            {
-                if (hasX)
-                    exponent = 1;
-                else
-                    exponent = 0;
-
-            }
-
-            if (!hasX && hasExponent)
-            {
-                String[] toks = null;
-                text = text.replace("^", "x");
-                toks = text.split("x");
-                text = text.replace("x", "");
-
-                int i = 1;
-                int val = Integer.parseInt(toks[0]);
-                while (i != Integer.parseInt(toks[1]))
-                {
-                    val += val;
-                    i++;
-                }
-                text = Integer.toString(val);
-                exponent = 0;
-            }
-
-            // Remove x and exponent, and split
-            String[] tokens = null;
-
-            text = text.replace("^", "");
-            text = text.trim();
-
-            tokens = text.split("x");
-
-            if (tokens.length == 0 || tokens[0].length() == 0 && hasX)
-                coefficient = 1;
-
-            if (exponent == -1)
-                exponent = Integer.parseInt(tokens[1]);
-            if (coefficient == -1)
-                coefficient = Double.parseDouble(tokens[0]);
-
-            newTerm = new Term(coefficient, exponent);
-
-            currentPolynomial = currentPolynomial.addTerm(newTerm);
-            outputPolynomial.setText(currentPolynomial.toString());
-        }
-        catch (Exception err)
-        {
-            inputTerm.setBackground(Color.pink);
-            String problem = "Please follow the format: 4x^2!";
-            Util.Error(problem);
-        }
-    }
-
-
 
     public void setGraphListener(GraphListener listener)
     {
@@ -451,5 +228,270 @@ public class ParameterPanel extends JPanel implements ActionListener
 
         return type;
     }
+    
+    private enum ParameterAction
+    {
+        ADD_TERM, ADD_INTERVAL, RESET, ADD_ITERATION, GRAPH, TABLE
+    }
 
+    private class ActionHandler
+    {
+
+        public ActionListener Handler(ParameterAction e)
+        {
+            switch (e)
+            {
+            case ADD_INTERVAL:  return new AddInterval();
+            case ADD_TERM:      return new AddTerm();
+            case ADD_ITERATION: return new AddIteration();
+            case GRAPH:         return new Graph();
+            case RESET:         return new Reset();
+            case TABLE:         return new Table();
+
+            default:
+                break;
+            }
+
+            return null;
+        }
+        
+        public class AddIteration implements ActionListener
+        {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                if (Util.isInputNumerical(txtIteration))
+                    return;
+                hasError = true;
+                Util.Error(ErrorMessage.INPUT_NUMBERS_ONLY);
+                
+                
+                // BUT WHAT IS THIS SUPPOSED TO DO?!
+            }
+
+        }
+
+        public class Graph implements ActionListener
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                GraphParameters parameters = new GraphParameters(currentPolynomial);
+                graphListener.GraphRequested(parameters);
+                ActionEvent actionEvent = new ActionEvent(e.getSource(), e.getID(), e.getActionCommand());
+                view.fireActionEvent(ViewAction.BACK, actionEvent);
+            }
+
+        }
+        
+        public class Table implements ActionListener{
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                if (hasError){
+                    Util.Error(ErrorMessage.CANNOT_GENERATE_TABLE);
+                    return;
+                }
+                    
+                model.compute(getInterval().getLeftInterval(), getInterval().getRightInterval(), getIterations(), getCurrentMethod());
+                iterations = model.getIterations();
+                view.resetTable();
+                view.setTable(iterations, cmbxMethod.getSelectedItem().toString());
+                
+                ActionEvent actionEvent = new ActionEvent(e.getSource(), e.getID(), e.getActionCommand());
+                view.fireActionEvent(ViewAction.NEXT, actionEvent);
+            }
+            
+        }
+
+        public final class AddInterval implements ActionListener
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                /* Check for missing input errors */
+                boolean leftHasInput, rightHasInput;
+                leftHasInput = Util.hasInput(leftInterval);
+                rightHasInput = Util.hasInput(rightInterval);
+                if (leftHasInput && rightHasInput == false)
+                {   
+                    Util.Error("Missing input : " + (leftHasInput ? "Left interval" : "Right interval") );
+                    hasError = true;
+                    return;
+                }
+                
+                /* Check for number format errors */
+                boolean isFormatOkay = true;
+                isFormatOkay = isFormatOkay && Util.isInputNumerical(leftInterval);
+                isFormatOkay = isFormatOkay && Util.isInputNumerical(rightInterval);
+                if (isFormatOkay == false)
+                {   
+                    Util.Error(ErrorMessage.INPUT_NUMBERS_ONLY);
+                    hasError = true;
+                    return;
+                }
+                
+                try {
+                    double left = Double.parseDouble(leftInterval.getText());
+                    double right = Double.parseDouble(rightInterval.getText());
+                    outputInterval.setText("[" + left + " ," + right + "]");
+                    currentInterval = new Interval(left, right);
+                }catch(NumberFormatException err){
+                    Util.Error(ErrorMessage.INPUT_NUMBERS_ONLY);
+                }
+            }
+        }
+
+        public final class AddTerm implements ActionListener
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                hasError = false;
+             // Check if the input are numbers
+                boolean inputNumerical = Util.isInputNumerical(inputTerm);
+                if (inputNumerical == false)
+                {
+                    Util.Error(ErrorMessage.COEFFICIENT_FORMAT);
+                    return;
+                }
+
+                // Check if the input are in pairs
+                String inputText = inputTerm.getText();
+                String[] array = inputText.split(" ");
+                double[] input = new double[array.length];
+
+                if (array.length % 2 == 1)
+                {
+                    Util.Error(ErrorMessage.INPUT_PAIRS_FORMAT);
+                    return;
+                }
+
+                // Parse the values of the pairs
+                int i = 0;
+                while (i < array.length)
+                    input[i] = Double.parseDouble(array[i++]);
+
+                method.Polynomial.setPolynomial(input);
+                
+
+                // Set the current polynomial
+                Term newTerm;
+                double coefficient;
+                if (currentPolynomial == null){
+                    double[] initial = {};
+                    currentPolynomial = new Polynomial(initial);
+                }
+                
+                for (i = 0; i < array.length; i += 2)
+                {
+                    coefficient = input[i];
+                    newTerm = new Term(coefficient, (int) input[i + 1]);
+                    currentPolynomial = currentPolynomial.addTerm(newTerm);
+                }
+                
+                outputPolynomial.setText(currentPolynomial.toString());
+            }
+        }
+
+        public final class OldAddTerm implements ActionListener{
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                    Term newTerm = null;
+
+                    inputTerm.setBackground(Color.white);
+
+                    /** Parsing */
+                    try
+                    {
+                        double coefficient = -1;
+                        int exponent = -1;
+                        boolean hasX = false;
+                        boolean hasExponent = false;
+
+                        String text = inputTerm.getText();
+                        text = text.toLowerCase();
+
+                        text = text.replace("-x", "-1x");
+                        text = text.replace("+x", "+1x");
+
+                        // for(2 chips)
+
+                        text = text.substring(text.length() - 1).equalsIgnoreCase("x") ? text.replace("x", "x^1") : text;
+
+                        hasExponent = text.contains("^");
+                        hasX = text.contains("x");
+
+                        if (text.contains("+") || text.contains("e") || text.contains("*") || text.contains("/"))
+                            throw new Exception("Invalid!");
+
+                        if (!hasExponent)
+                        {
+                            if (hasX)
+                                exponent = 1;
+                            else
+                                exponent = 0;
+
+                        }
+
+                        if (!hasX && hasExponent)
+                        {
+                            String[] toks = null;
+                            text = text.replace("^", "x");
+                            toks = text.split("x");
+                            text = text.replace("x", "");
+
+                            int i = 1;
+                            int val = Integer.parseInt(toks[0]);
+                            while (i != Integer.parseInt(toks[1]))
+                            {
+                                val += val;
+                                i++;
+                            }
+                            text = Integer.toString(val);
+                            exponent = 0;
+                        }
+
+                        // Remove x and exponent, and split
+                        String[] tokens = null;
+
+                        text = text.replace("^", "");
+                        text = text.trim();
+
+                        tokens = text.split("x");
+
+                        if (tokens.length == 0 || tokens[0].length() == 0 && hasX)
+                            coefficient = 1;
+
+                        if (exponent == -1)
+                            exponent = Integer.parseInt(tokens[1]);
+                        if (coefficient == -1)
+                            coefficient = Double.parseDouble(tokens[0]);
+
+                        newTerm = new Term(coefficient, exponent);
+
+                        currentPolynomial = currentPolynomial.addTerm(newTerm);
+                        outputPolynomial.setText(currentPolynomial.toString());
+                    }
+                    catch (Exception err)
+                    {
+                        inputTerm.setBackground(Color.pink);
+                        String problem = "Please follow the format: 4x^2!";
+                        Util.Error(problem);
+                    }
+                }
+            }
+        
+        public final class Reset implements ActionListener {
+            public void actionPerformed(ActionEvent e)
+            {
+                hasError = false;
+                currentPolynomial = new Polynomial(new ArrayList<Term>());
+                outputPolynomial.setText(currentPolynomial.toString());
+                view.resetGraph();
+            }
+        }
+
+    }
 }
