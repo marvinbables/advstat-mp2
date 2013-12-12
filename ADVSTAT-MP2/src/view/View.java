@@ -34,6 +34,8 @@ import org.jfree.data.function.PolynomialFunction2D;
 
 import view.listeners.GraphListener;
 import view.listeners.MenuListener;
+import view.util.ComponentFactory;
+import view.util.Size;
 
 
 @SuppressWarnings("serial")
@@ -108,9 +110,9 @@ public class View extends JFrame implements GraphListener{
 	
 		tablePanel.add(scroll);
 		
-		btnNext = parameterPanel.newButton(imgNext, parameterPanel);
+		btnNext = ComponentFactory.newButton(imgNext, parameterPanel);
 		
-		btnPrev = parameterPanel.newButton(imgPrev, parameterPanel);
+		btnPrev = ComponentFactory.newButton(imgPrev, parameterPanel);
 		btnPrev.setEnabled(false);
 		
 		btnNext.setMnemonic(java.awt.event.KeyEvent.VK_RIGHT);
@@ -118,7 +120,7 @@ public class View extends JFrame implements GraphListener{
 		
 
 		btnPanel.add(btnPrev);
-		btnPanel.add(Box.createRigidArea(parameterPanel.getDimensions("small")));
+		btnPanel.add(Box.createRigidArea(Size.Small));
 		btnPanel.add(btnNext);
 		
 		add(btnPanel);
