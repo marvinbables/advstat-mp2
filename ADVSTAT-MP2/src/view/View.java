@@ -53,7 +53,7 @@ public class View extends JFrame implements GraphListener{
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setResizable(false);
 		
-		/** Prepare menu */
+		/** Prepare menu */ 
 		MenuListener menuListener = new MenuListener();
 		menuListener.setGraphListener(this);
 		
@@ -97,9 +97,10 @@ public class View extends JFrame implements GraphListener{
 	//	btnPanel.setPreferredSize(new Dimension(200,50));
 		btnPanel.setLayout(new BoxLayout(btnPanel, BoxLayout.X_AXIS));
 		
-		
-		tblModel = setupTable();
-		tblInfo = new JTable(tblModel);
+		if(parameterPanel.regulaIsSelected())
+			tblModel = setupTableRegula();
+		else tblModel = setupTableSecant();
+			tblInfo = new JTable(tblModel);
 	//	tblInfo.setPreferredSize(new Dimension(400,370));
 		
 		scroll = new JScrollPane(tblInfo, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -131,6 +132,12 @@ public class View extends JFrame implements GraphListener{
 		setVisible(true);
 	}
 	
+	public void setUpTable(){
+		if(parameterPanel.regulaIsSelected())
+			tblModel = setupTableRegula();
+		else tblModel = setupTableSecant();
+			tblInfo.setModel(tblModel);
+	}
 	public void nextButton(){
 		
 		buttomPanel.remove(graphPanel);
@@ -183,7 +190,7 @@ public class View extends JFrame implements GraphListener{
 		validate();
 	//	repaint();
 	}
-	private DefaultTableModel setupTable(){
+	private DefaultTableModel setupTableRegula(){
 		return new DefaultTableModel(
 				new Object[][] {
 				},
@@ -207,7 +214,30 @@ public class View extends JFrame implements GraphListener{
 			    }
 			};
 	}
-	
+	private DefaultTableModel setupTableSecant(){
+		return new DefaultTableModel(
+				new Object[][] {
+				},
+				new String[] {
+					"x", "f(x)"
+						}
+				
+			) {
+		
+			@SuppressWarnings("rawtypes")
+				Class[] columnTypes = new Class[] {
+					Double.class, Double.class
+				};
+			@SuppressWarnings({ "rawtypes", "unchecked" })
+				public Class getColumnClass(int columnIndex) {
+					return columnTypes[columnIndex];
+				}
+			    public boolean isCellEditable(int row, int column) {
+			        //all cells false
+			        return false;
+			    }
+			};
+	}
 	public void addButtonActionListener(ActionListener l){
 		btnNext.addActionListener(l);
 		btnPrev.addActionListener(l);
@@ -217,25 +247,41 @@ public class View extends JFrame implements GraphListener{
 		drawGraph(parameters, GraphParameters.StartX, GraphParameters.EndX);
 	}
 
-	public void setTable(ArrayList<Iteration> iterations) {
-		Double[][] rowEntries = new Double[iterations.size()][7];
-		
-		if (iterations.size() == 0)
-			rowEntries = null;
-		
-		for (int i = 0; i < iterations.size(); i++){
-			Iteration x = iterations.get(i);
-			rowEntries[i][0] = x.getX0();
-			rowEntries[i][1] = x.getX1();
-			rowEntries[i][2] = x.getX2();
-			rowEntries[i][3] = x.getY0();
-			rowEntries[i][4] = x.getY1();
-			rowEntries[i][5] = x.getY2();
+	public void setTable(ArrayList<Iteration> iterations, String type) {
+		Double[][] rowEntries;
+		setUpTable();
+		if(type.equalsIgnoreCase("Regula Falsi")){
+			rowEntries = new Double[iterations.size()][7];
 			
-			tblModel.addRow(rowEntries[i]);
-			System.out.println(iterations.size());
+			if (iterations.size() == 0)
+				rowEntries = null;
+			
+			for (int i = 0; i < iterations.size(); i++){
+				Iteration x = iterations.get(i);
+				rowEntries[i][0] = x.getX0();
+				rowEntries[i][1] = x.getX1();
+				rowEntries[i][2] = x.getX2();
+				rowEntries[i][3] = x.getY0();
+				rowEntries[i][4] = x.getY1();
+				rowEntries[i][5] = x.getY2();
+				
+				tblModel.addRow(rowEntries[i]);
+			}
 		}
-		
+		else if(type.equalsIgnoreCase("Secant")){
+			rowEntries = new Double[iterations.size()][3];
+			
+			if (iterations.size() == 0)
+				rowEntries = null;
+			
+			for (int i = 0; i < iterations.size(); i++){
+				Iteration x = iterations.get(i);
+				rowEntries[i][0] = x.getX();
+				rowEntries[i][1] = x.getY();
+				
+				tblModel.addRow(rowEntries[i]);
+			}
+		}
 	}
 	public void resetTable(){
 		while(tblModel.getRowCount() > 0)

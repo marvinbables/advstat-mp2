@@ -205,6 +205,7 @@ public class ParameterPanel extends JPanel implements ActionListener{
 		}
 		
 		else if (target.equals(btnGraph)){
+			view.prevButton();
 			AddTerm2();
 			GraphParameters parameters = new GraphParameters(currentPolynomial);
 			graphListener.GraphRequested(parameters);
@@ -245,14 +246,16 @@ public class ParameterPanel extends JPanel implements ActionListener{
 				m.compute(getInterval().getLeftInterval(), getInterval().getRightInterval(), getIterations(), getCurrentMethod());
 				iterations = m.getIterations();
 				view.resetTable();
-				view.setTable(iterations);
+				view.setTable(iterations, cmbxMethod.getSelectedItem().toString());
 				view.nextButton();
 			}
 			
 			
 	}
 	
-	 
+	 public boolean regulaIsSelected(){
+		 return cmbxMethod.getSelectedIndex() == 0;
+	 }
 	
 	private void AddIteration(){
 		

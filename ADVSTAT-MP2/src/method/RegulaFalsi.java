@@ -23,7 +23,6 @@ public class RegulaFalsi extends Method{
 		System.out.println(y2);
 		
 		while(y2 != 0 && i < iteration) {
-			System.out.println(iteration);
 			
 			if(y2 != 0) {
 				if(y1 * y2 < 0) {
