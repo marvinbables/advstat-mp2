@@ -34,13 +34,19 @@ public class ParameterPanel extends JPanel
 {
 
     /**
-	 * 
-	 */
+     * constants
+     */
     private static final long    serialVersionUID = 1L;
-    
-    /* Parent class*/
+    public static final int      REGULA_FALSI     = 0;
+    public static final int      SECANT           = 1;
+    public static final int      UNKNOWN_METHOD   = -1;
+
+    /* Error handling */
+    private static final boolean SHOW_BORDER      = false;
+
+    /* Parent class */
     private View                 view;
-    
+
     /* Swing components */
     private JTextField           inputTerm, leftInterval, rightInterval, txtIteration;
     private JLabel               outputPolynomial, outputInterval;
@@ -48,18 +54,14 @@ public class ParameterPanel extends JPanel
     private JButton              btnGraph, btnInterval, btnIteration, btnTable;
     private JButton              btnReset;
 
-    private final ActionHandler  action    = new ActionHandler();
+    private final ActionHandler  action           = new ActionHandler();
 
     /* Why the fuck is this here */
-    private Model                model                = new Model();
-    
-    
+    private Model                model            = new Model();
+
+    private boolean              hasError         = false;
     private ArrayList<Iteration> iterations;
-    
-    /* Error handling */
-    private static final boolean SHOW_BORDER      = false;
-    private boolean              hasError        = false;
-    
+
     private JComboBox<String>    cmbxMethod;
 
     private Polynomial           currentPolynomial;
@@ -86,9 +88,6 @@ public class ParameterPanel extends JPanel
         outputInterval.setBorder(BorderFactory.createTitledBorder("Current Intervals"));
         outputInterval.setPreferredSize(Size.mediumWide);
         add(outputInterval);
-
-        /** Initialize parameters */
-        InitializeParameters();
 
         inputTerm = ComponentFactory.newInput("e.g. 4 3 2 1", Size.Small);
         add(inputTerm);
@@ -174,30 +173,6 @@ public class ParameterPanel extends JPanel
         }
     }
 
-    private void InitializeParameters()
-    {
-        
-    }
-
-    private void generateTable()
-    {
-        if (!hasError)
-        {
-            
-        }
-
-    }
-
-    public boolean regulaIsSelected()
-    {
-        return cmbxMethod.getSelectedIndex() == 0;
-    }
-
-    private void AddIteration()
-    {
-
-    }
-
     public void setGraphListener(GraphListener listener)
     {
         graphListener = listener;
@@ -220,13 +195,12 @@ public class ParameterPanel extends JPanel
 
     public int getCurrentMethod()
     {
-        int type = 0;
-        if (cmbxMethod.getSelectedItem().toString().equalsIgnoreCase("Regula Falsi"))
-            type = 0;
-        else if (cmbxMethod.getSelectedItem().toString().equalsIgnoreCase("Secant"))
-            type = 1;
-
-        return type;
+        String string = cmbxMethod.getSelectedItem().toString();
+        if (string.equalsIgnoreCase("Regula Falsi"))
+            return REGULA_FALSI;
+        if (string.equalsIgnoreCase("Secant"))
+            return SECANT;
+        return UNKNOWN_METHOD;
     }
     
     private enum ParameterAction

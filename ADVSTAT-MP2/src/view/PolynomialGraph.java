@@ -15,11 +15,11 @@ public class PolynomialGraph {
 	private PolynomialFunction2D graphableFunction;
 	private ChartPanel chartPanel;
 	
-	public PolynomialGraph(PolynomialFunction2D polynomialFunction2D, String graphTitle, double start, double end){
+	public PolynomialGraph(PolynomialFunction2D polynomialFunction2D, String graphTitle, double start, double end, String label){
 		graphableFunction = polynomialFunction2D;
 		
 		int samples = 150;
-		XYDataset dataset = DatasetUtilities.sampleFunction2D(graphableFunction, start, end, samples, "function");
+		XYDataset dataset = DatasetUtilities.sampleFunction2D(graphableFunction, start, end, samples, "f(x) = " + label);
 		JFreeChart chart = ChartFactory.createXYLineChart(graphTitle, 
 						null, null,
 						dataset, 
