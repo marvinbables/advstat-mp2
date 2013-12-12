@@ -32,7 +32,7 @@ public class Util
             {
                 // If each term can be parsed
                 // into float, then number
-                float f = Float.parseFloat(string);
+                Float.parseFloat(string);
             }
             return true;
         }

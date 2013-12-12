@@ -167,12 +167,6 @@ public class ParameterPanel extends JPanel
         }
     }
 
-    public void setGraphListener(GraphListener listener)
-    {
-        graphListener = listener;
-    }
-    
-
     public int getIterations()
     {
         try{return Integer.parseInt(txtIteration.getText());}
@@ -184,6 +178,11 @@ public class ParameterPanel extends JPanel
         return currentMethod;
     }
     
+    public void setGraphListener(GraphListener listener)
+    {
+        graphListener = listener;
+    }
+
     private enum ParameterAction
     {
         ADD_TERM, ADD_INTERVAL, RESET, ADD_ITERATION, GRAPH, TABLE, SET_METHOD
