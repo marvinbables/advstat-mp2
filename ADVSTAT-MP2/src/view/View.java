@@ -238,7 +238,7 @@ public class View extends JFrame implements GraphListener
         double end = GraphParameters.EndX;
                 graphPanel.removeAll();
 
-        if (parameters.polynomial.getTerms().size() == 0)
+        if (parameters.polynomial == null || parameters.polynomial.getTerms().size() == 0)
         {
             Util.Error("Invalid polynomial to graph.");
             return;
