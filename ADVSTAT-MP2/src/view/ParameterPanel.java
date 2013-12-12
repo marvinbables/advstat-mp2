@@ -312,6 +312,10 @@ public class ParameterPanel extends JPanel
                 try {
                     double left = Double.parseDouble(leftInterval.getText());
                     double right = Double.parseDouble(rightInterval.getText());
+                    
+                    GraphParameters.StartX = left;
+                    GraphParameters.EndX = right;
+                    
                     outputInterval.setText("[" + left + " ," + right + "]");
                     currentInterval = new Interval(left, right);
                 }catch(NumberFormatException err){
