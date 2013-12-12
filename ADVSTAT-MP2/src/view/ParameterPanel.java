@@ -56,7 +56,7 @@ public class ParameterPanel extends JPanel
 
     private final ActionHandler  action           = new ActionHandler();
 
-    /* Why the fuck is this here */
+    /* What the f */
     private Model                model            = new Model();
 
     private boolean              hasError         = false;
