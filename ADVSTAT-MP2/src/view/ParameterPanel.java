@@ -52,7 +52,6 @@ public class ParameterPanel extends JPanel implements ActionListener{
 	private JComboBox<String> cmbxMethod;
 	
 	private Polynomial currentPolynomial;
-	private method.Polynomial polynomial;
 	private Interval currentInterval;
 	private int selectedMethod;
 	
@@ -206,7 +205,6 @@ public class ParameterPanel extends JPanel implements ActionListener{
 		
 		else if (target.equals(btnGraph)){
 			view.prevButton();
-			AddTerm2();
 			GraphParameters parameters = new GraphParameters(currentPolynomial);
 			graphListener.GraphRequested(parameters);
 			validate();
