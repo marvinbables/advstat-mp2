@@ -10,7 +10,7 @@ public abstract class Method {
     }
     
 	public int iteration;
-    private Approach approach;
+    protected Approach approach;
 	
 	public Method(Approach approach, int iteration) {
 		this.approach = approach;

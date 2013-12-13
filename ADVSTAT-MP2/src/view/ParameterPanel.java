@@ -6,7 +6,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
@@ -14,7 +13,6 @@ import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.text.JTextComponent;
@@ -29,8 +27,8 @@ import view.View.ViewAction;
 import view.listeners.GraphListener;
 import view.listeners.GraphListener.GraphParameters;
 import view.util.ComponentFactory;
-import view.util.Util;
 import view.util.Size;
+import view.util.Util;
 import view.util.Util.ErrorMessage;
 
 public class ParameterPanel extends JPanel
@@ -115,7 +113,7 @@ public class ParameterPanel extends JPanel
 
         cmbxMethod = new JComboBox<String>();
         cmbxMethod.setPreferredSize(Size.Medium);
-        cmbxMethod.addItem("View function");
+        cmbxMethod.addItem("Graph function");
         cmbxMethod.addItem("Regula Falsi");
         cmbxMethod.addItem("Secant");
         cmbxMethod.addActionListener(action.Handler(ParameterAction.SET_METHOD));
@@ -404,6 +402,7 @@ public class ParameterPanel extends JPanel
                 outputPolynomial.setText(currentPolynomial.toString());
             }
         }
+        @SuppressWarnings("unused")
         public final class OldAddTerm implements ActionListener{
 
             @Override

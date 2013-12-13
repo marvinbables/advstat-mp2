@@ -1,18 +1,12 @@
-import java.util.ArrayList;
-
-import controller.Controller;
-import view.View;
-import method.Bisection;
-import method.Polynomial;
-import method.RegulaFalsi;
-import method.Secant;
-import model.Iteration;
 import model.Model;
+import view.View;
+import controller.Controller;
 
 
 public class Driver {
 
-	public static void main(String[] args) {
+	@SuppressWarnings("unused")
+    public static void main(String[] args) {
 	 	Model model = new Model();
 		View view = new View();
 		Controller controller = new Controller(view, model);
