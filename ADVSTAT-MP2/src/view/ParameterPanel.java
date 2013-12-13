@@ -89,7 +89,7 @@ public class ParameterPanel extends JPanel
         inputFunction = ComponentFactory.newInput("e.g. 4 3 2 1", Size.Small);
         add(inputFunction);
 
-        btnSetFunction = ComponentFactory.newButton("Set function", action.Handler(ParameterAction.SET_FUNCTION), Size.Small);
+        btnSetFunction = ComponentFactory.newButton("Set f(x)", action.Handler(ParameterAction.SET_FUNCTION), Size.Small);
         btnSetFunction.setMnemonic(java.awt.event.KeyEvent.VK_A);
         add(btnSetFunction);
 
