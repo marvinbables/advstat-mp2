@@ -1,6 +1,7 @@
 package view;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -16,6 +17,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.text.JTextComponent;
 
 import model.Interval;
 import model.Iteration;
@@ -210,7 +212,7 @@ public class ParameterPanel extends JPanel
             return null;
         }
 
-        public class SetMethod implements ActionListener
+        public final class SetMethod implements ActionListener
         {
 
             @Override
@@ -225,7 +227,7 @@ public class ParameterPanel extends JPanel
             }
 
         }
-        public class AddIteration implements ActionListener
+        public final class AddIteration implements ActionListener
         {
 
             @Override
@@ -242,8 +244,7 @@ public class ParameterPanel extends JPanel
             }
 
         }
-
-        public class Graph implements ActionListener
+        public final class Graph implements ActionListener
         {
             public void actionPerformed(ActionEvent e)
             {
@@ -254,8 +255,7 @@ public class ParameterPanel extends JPanel
             }
 
         }
-        
-        public class Table implements ActionListener{
+        public final class Table implements ActionListener{
 
             @Override
             public void actionPerformed(ActionEvent e)
@@ -281,7 +281,6 @@ public class ParameterPanel extends JPanel
             }
             
         }
-
         public final class AddInterval implements ActionListener
         {
             public void actionPerformed(ActionEvent e)
@@ -322,7 +321,6 @@ public class ParameterPanel extends JPanel
                 }
             }
         }
-
         public final class AddTerm implements ActionListener
         {
             public void actionPerformed(ActionEvent e)
@@ -373,7 +371,6 @@ public class ParameterPanel extends JPanel
                 outputPolynomial.setText(currentPolynomial.toString());
             }
         }
-
         public final class OldAddTerm implements ActionListener{
 
             @Override
@@ -463,13 +460,18 @@ public class ParameterPanel extends JPanel
                     }
                 }
             }
-        
         public final class Reset implements ActionListener {
             public void actionPerformed(ActionEvent e)
             {
                 hasError = false;
                 currentPolynomial = new Polynomial(new ArrayList<Term>());
                 outputPolynomial.setText(currentPolynomial.toString());
+                
+                Component[] components = getComponents();
+                for (Component component : components)
+                    if (component instanceof JTextComponent)
+                        component.setBackground(Color.white);
+                
                 view.ResetGraph();
             }
         }
