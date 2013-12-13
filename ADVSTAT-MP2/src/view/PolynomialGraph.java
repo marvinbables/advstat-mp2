@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.util.ArrayList;
 
+import method.Method.Approach;
 import model.Iteration;
 
 import org.jfree.chart.ChartFactory;
@@ -28,12 +29,15 @@ public class PolynomialGraph
     private ChartPanel           scatterChart;
     private ChartPanel           polynomialChart;
     private ArrayList<Iteration> iterations;
+    private Approach approach;
 
+    
     public PolynomialGraph(GraphParameters parameters)
     {
         this.graphableFunction = new PolynomialFunction2D(parameters.polynomial.getDoubles());
         this.graphTitle = parameters.polynomial.toString(); 
         this.iterations = parameters.iterations;
+        this.approach = parameters.approach;
         
         this.start = GraphParameters.StartX;
         this.end = GraphParameters.EndX;
@@ -44,27 +48,19 @@ public class PolynomialGraph
 
     private void InitScatterplotChart()
     {
-        /* Begin with the attempts */
-        XYSeries XYSeries = new XYSeries("test");
-        XYSeries.add(0, 0);
-        XYSeries.add(0, 1);
-        XYSeries.add(0, 5);
-        XYSeries.add(1, 1);
-        XYSeries.add(2, 4);
-        XYSeries.add(2, 7);
-        XYSeries.add(3, 9);
-
+        if (approach == null) return;
         /* Then the actual values */
-        XYSeries XYSeries2 = new XYSeries("test2 ");
-        XYSeries2.add(2, 4);
-        XYSeries2.add(3, 5);
-        XYSeries2.add(4, 6);
-        XYSeries2.add(5, 7);
+        XYSeries functionItself = new XYSeries("Function itself");
+        
+        for (Iteration iter : iterations)
+        {
+            double x = iter.getX2();
+            double y = iter.getY2();
+            functionItself.add(x, y);
+        }
 
         XYSeriesCollection collection = new XYSeriesCollection();
-
-        collection.addSeries(XYSeries);
-        collection.addSeries(XYSeries2);
+        collection.addSeries(functionItself);
 
         
         JFreeChart chart = ChartFactory.createScatterPlot("f(x) = " + graphTitle, null, null, collection, PlotOrientation.VERTICAL, false, false, false);
@@ -88,6 +84,7 @@ public class PolynomialGraph
 
     public ChartPanel getScatterChart()
     {
+        if (approach == null) return null;
         return scatterChart;
     }
 
