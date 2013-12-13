@@ -12,9 +12,6 @@ public class Model {
 	ArrayList<Iteration> iterations = null;
 	
 	public void compute(double leftInterval, double rightInterval, int numIteration, double threshold, Approach approach) {
-	    System.out.println("The left interval is " + leftInterval);
-	    System.out.println("The right interval is " + rightInterval);
-	    System.out.println("Do " + approach.toString() + " " + numIteration + " times.");
 	    switch(approach) {
 			case RegulaFalsi:
 				RegulaFalsi regula = new RegulaFalsi(numIteration, threshold);

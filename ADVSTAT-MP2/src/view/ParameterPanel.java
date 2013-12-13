@@ -74,8 +74,8 @@ public class ParameterPanel extends JPanel
     {
         this.view = view;
         /** Initialize the panel */
-        setPreferredSize(new Dimension(400, 400));
         setLayout(new FlowLayout(FlowLayout.CENTER));
+        setPreferredSize(new Dimension(450, 300));
         setBorder(BorderFactory.createEtchedBorder());
 
         /** Initialize components */

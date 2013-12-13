@@ -1,5 +1,6 @@
 package view;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -50,7 +51,7 @@ public class View extends JFrame implements GraphListener
     public View()
     {
         super("Roots of Polynomials");
-        setPreferredSize(new Dimension(450, 650));
+        setPreferredSize(new Dimension(450, 730));
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setResizable(false);
 
@@ -73,21 +74,20 @@ public class View extends JFrame implements GraphListener
         setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 
         parameterPanel = new ParameterPanel(this);
-        parameterPanel.setBorder(BorderFactory.createEtchedBorder());
         parameterPanel.setGraphListener(this);
         add(parameterPanel);
 
         bottomPanel = new JPanel();
         bottomPanel.setBorder(BorderFactory.createEtchedBorder());
-        bottomPanel.setPreferredSize(new Dimension(430, 400));
+        bottomPanel.setPreferredSize(new Dimension(430, 350));
 
         graphPanel = new JPanel();
-        graphPanel.setBorder(BorderFactory.createEtchedBorder());
-        graphPanel.setPreferredSize(new Dimension(430, 310));
+        // graphPanel.setBorder(BorderFactory.createEtchedBorder());
+        // graphPanel.setPreferredSize(new Dimension(430, 380));
 
         tablePanel = new JPanel();
         // tablePanel.setBorder(BorderFactory.createEtchedBorder());
-        tablePanel.setPreferredSize(new Dimension(430, 300));
+        // tablePanel.setPreferredSize(new Dimension(430, 380));
 
         imgNext = new ImageIcon("icons/next.png");
         imgPrev = new ImageIcon("icons/prev.png");
@@ -105,7 +105,7 @@ public class View extends JFrame implements GraphListener
         tblInfo = new JTable(tblModel);
 
         scroll = new JScrollPane(tblInfo, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        scroll.setPreferredSize(new Dimension(420, 250));
+        scroll.setPreferredSize(new Dimension(420, 320));
 
         tablePanel.add(scroll);
 
