@@ -1,6 +1,9 @@
 package method;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
+
+import model.polynomial.Term;
 
 public class Polynomial {
 	
@@ -65,7 +68,6 @@ public class Polynomial {
 		
 		for (int i = 0; i < function.size(); i+=2) 
 			result += function.get(i) * Math.pow(x, function.get(i+1));
-		
 		return result;
 	}
 	
@@ -76,6 +78,23 @@ public class Polynomial {
 			result += derivative.get(i) * Math.pow(x, derivative.get(i+1));
 		
 		return result;
+	}
+	
+	public static model.polynomial.Polynomial getPolynomial(){
+	    ArrayList<Term> terms = new ArrayList<>();
+        for (int i = 0; i < function.size(); i+=2) 
+        {
+            double coefficient = function.get(i);
+            int exponent = function.get(i + 1).intValue();
+            terms.add( new Term(coefficient, exponent) );
+        }
+        model.polynomial.Polynomial p = new model.polynomial.Polynomial(terms);
+        return p;
+	}
+	
+	public static String read()
+	{
+	    return getPolynomial().toString();
 	}
 	
 }

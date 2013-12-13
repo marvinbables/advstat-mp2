@@ -49,9 +49,9 @@ public class ParameterPanel extends JPanel
     private View                 view;
 
     /* Swing components */
-    private JTextField           inputTerm, leftInterval, rightInterval, inputIteration;
+    private JTextField           inputFunction, leftInterval, rightInterval, inputIteration;
     private JLabel               outputPolynomial, outputInterval;
-    private JButton              btnAddTerm;
+    private JButton              btnSetFunction;
     private JButton              btnGraph, btnInterval, btnIteration, btnTable;
     private JButton              btnReset;
 
@@ -86,12 +86,12 @@ public class ParameterPanel extends JPanel
         outputInterval.setPreferredSize(Size.mediumWide);
         add(outputInterval);
 
-        inputTerm = ComponentFactory.newInput("e.g. 4 3 2 1", Size.Small);
-        add(inputTerm);
+        inputFunction = ComponentFactory.newInput("e.g. 4 3 2 1", Size.Small);
+        add(inputFunction);
 
-        btnAddTerm = ComponentFactory.newButton("Add term", action.Handler(ParameterAction.ADD_TERM), Size.Small);
-        btnAddTerm.setMnemonic(java.awt.event.KeyEvent.VK_A);
-        add(btnAddTerm);
+        btnSetFunction = ComponentFactory.newButton("Set function", action.Handler(ParameterAction.SET_FUNCTION), Size.Small);
+        btnSetFunction.setMnemonic(java.awt.event.KeyEvent.VK_A);
+        add(btnSetFunction);
 
         btnReset = ComponentFactory.newButton("Reset", action.Handler(ParameterAction.RESET), Size.Small);
         btnReset.setMnemonic(java.awt.event.KeyEvent.VK_R);
@@ -198,7 +198,7 @@ public class ParameterPanel extends JPanel
 
     private enum ParameterAction
     {
-        ADD_TERM, ADD_INTERVAL, RESET, ADD_ITERATION, GRAPH, TABLE, SET_METHOD
+        SET_FUNCTION, ADD_INTERVAL, RESET, ADD_ITERATION, GRAPH, TABLE, SET_METHOD
     }
 
     private class ActionHandler
@@ -209,7 +209,7 @@ public class ParameterPanel extends JPanel
             switch (e)
             {
             case ADD_INTERVAL:  return new AddInterval();
-            case ADD_TERM:      return new AddTerm();
+            case SET_FUNCTION:      return new SetFunction();
             case ADD_ITERATION: return new AddIteration();
             case GRAPH:         return new Graph();
             case RESET:         return new Reset();
@@ -353,13 +353,13 @@ public class ParameterPanel extends JPanel
                 }
             }
         }
-        public final class AddTerm implements ActionListener
+        public final class SetFunction implements ActionListener
         {
             public void actionPerformed(ActionEvent e)
             {
                 hasError = false;
              // Check if the input are numbers
-                boolean inputNumerical = Util.isInputNumerical(inputTerm);
+                boolean inputNumerical = Util.isInputNumerical(inputFunction);
                 if (inputNumerical == false)
                 {
                     Util.Error(ErrorMessage.COEFFICIENT_FORMAT);
@@ -367,7 +367,7 @@ public class ParameterPanel extends JPanel
                 }
 
                 // Check if the input are in pairs
-                String inputText = inputTerm.getText();
+                String inputText = inputFunction.getText();
                 String[] array = inputText.split(" ");
                 double[] input = new double[array.length];
 
@@ -386,19 +386,20 @@ public class ParameterPanel extends JPanel
                 
 
                 // Set the current polynomial
-                Term newTerm;
-                double coefficient;
-                if (currentPolynomial == null){
-                    double[] initial = {};
-                    currentPolynomial = new Polynomial(initial);
-                }
+//                Term newTerm;
+//                double coefficient;
                 
-                for (i = 0; i < array.length; i += 2)
-                {
-                    coefficient = input[i];
-                    newTerm = new Term(coefficient, (int) input[i + 1]);
-                    currentPolynomial = currentPolynomial.addTerm(newTerm);
-                }
+                method.Polynomial.setPolynomial(input);
+                currentPolynomial = method.Polynomial.getPolynomial();
+                
+                
+                // No more dynamic polynomials
+//                for (i = 0; i < array.length; i += 2)
+//                {
+//                    coefficient = input[i];
+//                    newTerm = new Term(coefficient, (int) input[i + 1]);
+//                    currentPolynomial = currentPolynomial.addTerm(newTerm);
+//                }
                 
                 outputPolynomial.setText(currentPolynomial.toString());
             }
@@ -411,7 +412,7 @@ public class ParameterPanel extends JPanel
             {
                     Term newTerm = null;
 
-                    inputTerm.setBackground(Color.white);
+                    inputFunction.setBackground(Color.white);
 
                     /** Parsing */
                     try
@@ -421,7 +422,7 @@ public class ParameterPanel extends JPanel
                         boolean hasX = false;
                         boolean hasExponent = false;
 
-                        String text = inputTerm.getText();
+                        String text = inputFunction.getText();
                         text = text.toLowerCase();
 
                         text = text.replace("-x", "-1x");
@@ -487,7 +488,7 @@ public class ParameterPanel extends JPanel
                     }
                     catch (Exception err)
                     {
-                        inputTerm.setBackground(Color.pink);
+                        inputFunction.setBackground(Color.pink);
                         String problem = "Please follow the format: 4x^2!";
                         Util.Error(problem);
                     }

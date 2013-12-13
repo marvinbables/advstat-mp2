@@ -11,17 +11,19 @@ public class Model {
     
 	ArrayList<Iteration> iterations = null;
 	
-	public void compute(double x0, double x1, int numIteration, Approach approach) {
-		System.out.println(x0 + " " + x1 + " " + numIteration + " " + approach);
-		switch(approach) {
+	public void compute(double leftInterval, double rightInterval, int numIteration, Approach approach) {
+	    System.out.println("The left interval is " + leftInterval);
+	    System.out.println("The right interval is " + rightInterval);
+	    System.out.println("Do " + approach.toString() + " " + numIteration + " times.");
+	    switch(approach) {
 			case RegulaFalsi:
 				RegulaFalsi regula = new RegulaFalsi(numIteration);
-				iterations = regula.compute(x0, x1);
+				iterations = regula.compute(leftInterval, rightInterval);
 				System.out.println(iterations.size());
 				break;
 			case Secant:
 				Secant secant = new Secant(numIteration);
-				iterations = secant.compute(x0, x1);
+				iterations = secant.compute(leftInterval, rightInterval);
 				break;
         case Bisection:
             break;
