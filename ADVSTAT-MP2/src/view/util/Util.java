@@ -73,7 +73,7 @@ public class Util
     
 
     public enum ErrorMessage {
-        INPUT_NUMBERS_ONLY, COEFFICIENT_FORMAT, INPUT_PAIRS_FORMAT, CANNOT_GENERATE_TABLE, NO_INTERVALS_SET
+        INPUT_NUMBERS_ONLY, COEFFICIENT_FORMAT, INPUT_PAIRS_FORMAT, CANNOT_GENERATE_TABLE, NO_INTERVALS_SET, NO_APPROACH_SELECTED
     }
 
     /**
@@ -102,6 +102,9 @@ public class Util
             break;
         case NO_INTERVALS_SET:
             s = "Cannot generate table: There are no intervals set.";
+            break;
+        case NO_APPROACH_SELECTED:
+            s = "Cannot generate table: Please select an approach from the drop down menu.";
             break;
         default:
             s = "";

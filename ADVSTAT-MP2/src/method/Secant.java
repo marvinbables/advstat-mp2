@@ -7,7 +7,7 @@ import model.Iteration;
 public class Secant extends Method {
 
 	public Secant(int iteration) {
-		super(iteration);
+		super(Approach.Secant, iteration);
 	}
 	
 	public ArrayList<Iteration> compute(double x1, double x2) {

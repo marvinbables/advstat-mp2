@@ -7,7 +7,7 @@ import model.Iteration;
 public class Bisection extends Method {
 	
 	public Bisection(int iteration) {
-		super(iteration);
+		super(Method.Approach.Bisection, iteration);
 	}
 	
 	public ArrayList<Iteration> compute(double x0, double x1) {

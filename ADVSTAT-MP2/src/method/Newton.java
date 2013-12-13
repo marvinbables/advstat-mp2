@@ -7,7 +7,7 @@ import model.Iteration;
 public class Newton extends Method{
 	
 	public Newton(int iteration) {
-		super(iteration);
+		super(Method.Approach.Newton, iteration);
 	}
 	
 	public ArrayList<Iteration> compute(double x) {

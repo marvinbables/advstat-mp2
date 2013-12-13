@@ -6,7 +6,7 @@ import model.Iteration;
 
 public class RegulaFalsi extends Method{
 	public RegulaFalsi(int iteration) {
-		super(iteration);
+		super(Approach.RegulaFalsi, iteration);
 	}
 	
 	public ArrayList<Iteration> compute(double x0, double x1) {

@@ -19,6 +19,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
+import method.Method.Approach;
 import model.Iteration;
 
 import org.jfree.data.function.PolynomialFunction2D;
@@ -96,9 +97,9 @@ public class View extends JFrame implements GraphListener
         btnPanel.setLayout(new BoxLayout(btnPanel, BoxLayout.X_AXIS));
 
         // Initial creation of JTable
-        if (parameterPanel.getCurrentMethod() == ParameterPanel.REGULA_FALSI)
+        if (parameterPanel.getApproach() == Approach.RegulaFalsi)
             tblModel = setupTableRegula();
-        else
+        else if (parameterPanel.getApproach() == Approach.Secant)
             tblModel = setupTableSecant();
 
         tblInfo = new JTable(tblModel);
@@ -163,17 +164,17 @@ public class View extends JFrame implements GraphListener
     /**
      * Initializes the table given the kind of approach for numerical analysis
      * 
-     * @param type
+     * @param approach
      *            - ParameterPanel.REGULA_FALSI or ParameterPanel.SECANT
      */
-    public void InitializeTable(int type)
+    public void InitializeTable(Approach approach)
     {
-        switch (type)
+        switch (approach)
         {
-        case ParameterPanel.REGULA_FALSI:
+        case RegulaFalsi:
             tblModel = setupTableRegula();
             break;
-        case ParameterPanel.SECANT:
+        case Secant:
             tblModel = setupTableSecant();
             break;
         default:
@@ -236,27 +237,45 @@ public class View extends JFrame implements GraphListener
     {
         double begin = GraphParameters.StartX;
         double end = GraphParameters.EndX;
-                graphPanel.removeAll();
+        graphPanel.removeAll();
 
         if (parameters.polynomial == null || parameters.polynomial.getTerms().size() == 0)
         {
             Util.Error("Invalid polynomial to graph.");
             return;
         }
-
-        double[] c = parameters.polynomial.getDoubles();
-        graph = new PolynomialGraph(new PolynomialFunction2D(c), "Graph of f(x)", begin, end, parameters.polynomial.toString());
-        graphPanel.add(graph.getChart());
         
+        graph = new PolynomialGraph(
+                new PolynomialFunction2D(parameters.polynomial.getDoubles()),
+                "Graph of f(x)", 
+                begin, 
+                end, 
+                parameters.polynomial.toString());
+        
+        if (parameters.approach == null){
+            graphPanel.add(graph.getPolynomialChart());
+            return;
+        }
+        
+        switch (parameters.approach)
+        {
+        case Secant:
+        case RegulaFalsi:
+            graphPanel.add(graph.getScatterChart());            
+        default:
+            break;
+        }
     }
 
-    public void InitializeTable(ArrayList<Iteration> iterations, int type)
+    public void InitializeTable(ArrayList<Iteration> iterations, Approach approach)
     {
         ResetTable();
         Double[][] rowEntries;
-        InitializeTable(parameterPanel.getCurrentMethod());
-        if (type == ParameterPanel.REGULA_FALSI)
+        InitializeTable(approach);
+        switch (approach)
         {
+
+        case RegulaFalsi:
             rowEntries = new Double[iterations.size()][7];
 
             if (iterations.size() == 0)
@@ -274,9 +293,8 @@ public class View extends JFrame implements GraphListener
 
                 tblModel.addRow(rowEntries[i]);
             }
-        }
-        else if (type == ParameterPanel.SECANT)
-        {
+            break;
+        case Secant:
             rowEntries = new Double[iterations.size()][3];
 
             if (iterations.size() == 0)
@@ -290,6 +308,12 @@ public class View extends JFrame implements GraphListener
 
                 tblModel.addRow(rowEntries[i]);
             }
+            break;
+        case Bisection:
+        case Newton:
+        case Polynomial:
+        default:
+            break;
         }
     }
 
@@ -307,8 +331,9 @@ public class View extends JFrame implements GraphListener
      */
     public void ResetTable()
     {
-        while (tblModel.getRowCount() > 0)
-            tblModel.removeRow(0);
+        if (tblModel != null)
+            while (tblModel.getRowCount() > 0)
+                tblModel.removeRow(0);
     }
 
     public enum ViewAction

@@ -19,6 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.text.JTextComponent;
 
+import method.Method.Approach;
 import model.Interval;
 import model.Iteration;
 import model.Model;
@@ -39,8 +40,8 @@ public class ParameterPanel extends JPanel
      * constants
      */
     private static final long    serialVersionUID = 1L;
-    public static final int      REGULA_FALSI     = 0;
-    public static final int      SECANT           = 1;
+    public static final int      REGULA_FALSI     = 1;
+    public static final int      SECANT           = 2;
     public static final int      UNKNOWN_METHOD   = -1;
 
     /* Error handling */
@@ -50,7 +51,7 @@ public class ParameterPanel extends JPanel
     private View                 view;
 
     /* Swing components */
-    private JTextField           inputTerm, leftInterval, rightInterval, txtIteration;
+    private JTextField           inputTerm, leftInterval, rightInterval, inputIteration;
     private JLabel               outputPolynomial, outputInterval;
     private JButton              btnAddTerm;
     private JButton              btnGraph, btnInterval, btnIteration, btnTable;
@@ -68,7 +69,6 @@ public class ParameterPanel extends JPanel
 
     private Polynomial           currentPolynomial;
     private Interval             currentInterval;
-    private int                  currentMethod;
 
     private GraphListener        graphListener;
 
@@ -115,6 +115,7 @@ public class ParameterPanel extends JPanel
 
         cmbxMethod = new JComboBox<String>();
         cmbxMethod.setPreferredSize(Size.Medium);
+        cmbxMethod.addItem("View function");
         cmbxMethod.addItem("Regula Falsi");
         cmbxMethod.addItem("Secant");
         cmbxMethod.addActionListener(action.Handler(ParameterAction.SET_METHOD));
@@ -125,6 +126,7 @@ public class ParameterPanel extends JPanel
         add(lblInterval);
 
         leftInterval = ComponentFactory.newInput("e.g. 2", Size.Petite);
+        leftInterval.setEnabled(false);
         add(leftInterval);
 
         JLabel label = new JLabel(",");
@@ -132,6 +134,7 @@ public class ParameterPanel extends JPanel
         add(label);
 
         rightInterval = ComponentFactory.newInput("e.g. 4", Size.Petite);
+        rightInterval.setEnabled(false);
         add(rightInterval);
 
         JLabel label1 = new JLabel("]");
@@ -139,6 +142,7 @@ public class ParameterPanel extends JPanel
         add(label1);
 
         btnInterval = ComponentFactory.newButton("Add Interval", action.Handler(ParameterAction.ADD_INTERVAL), Size.Medium);                                               // 30));
+        btnInterval.setEnabled(false);
         add(btnInterval);
 
         btnInterval.setMnemonic(java.awt.event.KeyEvent.VK_I);
@@ -147,17 +151,20 @@ public class ParameterPanel extends JPanel
         label1.setPreferredSize(new Dimension(70, 30));
         add(label1);
 
-        txtIteration = ComponentFactory.newInput("e.g. 4", Size.Petite);
-        add(txtIteration);
+        inputIteration = ComponentFactory.newInput("e.g. 4", Size.Petite);
+        inputIteration.setEnabled(false);
+        add(inputIteration);
 
         add(Box.createRigidArea(new Dimension(80, 30)));
 
         btnIteration = ComponentFactory.newButton("Add Iteration", action.Handler(ParameterAction.ADD_ITERATION), Size.Medium);
+        btnIteration.setEnabled(false);
         add(btnIteration);
 
         add(Box.createRigidArea(new Dimension(210, 30)));
 
         btnTable = ComponentFactory.newButton("Generate Table", action.Handler(ParameterAction.TABLE), Size.Medium);
+        btnTable.setEnabled(false);
         add(btnTable);
 
         // add(Box.createRigidArea(new Dimension(80, 30)));
@@ -171,13 +178,22 @@ public class ParameterPanel extends JPanel
 
     public int getIterations()
     {
-        try{return Integer.parseInt(txtIteration.getText());}
+        try{return Integer.parseInt(inputIteration.getText());}
         catch (Exception e){}return 0;
     }
-
-    public int getCurrentMethod()
+    
+    public Approach getApproach()
     {
-        return currentMethod;
+        switch (cmbxMethod.getSelectedIndex())
+        {
+        case REGULA_FALSI:
+            return Approach.RegulaFalsi;
+        case SECANT:
+            return Approach.Secant;
+        default:
+            break;
+        }
+        return null;
     }
     
     public void setGraphListener(GraphListener listener)
@@ -218,12 +234,25 @@ public class ParameterPanel extends JPanel
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                String string = cmbxMethod.getSelectedItem().toString();
-                if (string.equalsIgnoreCase("Regula Falsi"))
-                    currentMethod = REGULA_FALSI;
-                if (string.equalsIgnoreCase("Secant"))
-                    currentMethod = SECANT;
-                currentMethod = UNKNOWN_METHOD;
+                int i = cmbxMethod.getSelectedIndex();
+                boolean value = false;
+                switch (i)
+                {
+                case SECANT:
+                case REGULA_FALSI:
+                    value = true;
+                    break;
+
+                default:
+                    value = false;
+                    break;
+                }
+                rightInterval.setEnabled(value);
+                leftInterval.setEnabled(value);
+                inputIteration.setEnabled(value);
+                btnInterval.setEnabled(value);
+                btnIteration.setEnabled(value);
+                btnTable.setEnabled(value);
             }
 
         }
@@ -233,7 +262,7 @@ public class ParameterPanel extends JPanel
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                if (Util.isInputNumerical(txtIteration))
+                if (Util.isInputNumerical(inputIteration))
                     return;
                 hasError = true;
                 Util.Error(ErrorMessage.INPUT_NUMBERS_ONLY);
@@ -248,7 +277,7 @@ public class ParameterPanel extends JPanel
         {
             public void actionPerformed(ActionEvent e)
             {
-                GraphParameters parameters = new GraphParameters(currentPolynomial);
+                GraphParameters parameters = new GraphParameters(currentPolynomial, getIterations(), getApproach());
                 graphListener.GraphRequested(parameters);
                 ActionEvent actionEvent = new ActionEvent(e.getSource(), e.getID(), e.getActionCommand());
                 view.fireActionEvent(ViewAction.BACK, actionEvent);
@@ -269,12 +298,16 @@ public class ParameterPanel extends JPanel
                     return;
                 }
                 
+                if (getApproach() == null){
+                    Util.Error(ErrorMessage.NO_APPROACH_SELECTED);
+                    return;
+                }
                 
                 double left = currentInterval.getLeftInterval();
                 double right = currentInterval.getRightInterval();
-                model.compute(left, right, getIterations(), getCurrentMethod());
+                model.compute(left, right, getIterations(), getApproach());
                 iterations = model.getIterations();
-                view.InitializeTable(iterations, getCurrentMethod());
+                view.InitializeTable(iterations, getApproach());
                 
                 ActionEvent actionEvent = new ActionEvent(e.getSource(), e.getID(), e.getActionCommand());
                 view.fireActionEvent(ViewAction.NEXT, actionEvent);
