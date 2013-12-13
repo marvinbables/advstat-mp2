@@ -12,6 +12,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -66,12 +67,14 @@ public class ParameterPanel extends JPanel
     private Interval             currentInterval;
 
     private GraphListener        graphListener;
+    private JFormattedTextField inputThreshold;
+    private JButton btnThreshold;
 
     public ParameterPanel(View view)
     {
         this.view = view;
         /** Initialize the panel */
-        setPreferredSize(new Dimension(400, 300));
+        setPreferredSize(new Dimension(400, 400));
         setLayout(new FlowLayout(FlowLayout.CENTER));
         setBorder(BorderFactory.createEtchedBorder());
 
@@ -155,9 +158,23 @@ public class ParameterPanel extends JPanel
         btnIteration = ComponentFactory.newButton("Add Iteration", action.Handler(ParameterAction.ADD_ITERATION), Size.Medium);
         btnIteration.setEnabled(false);
         add(btnIteration);
+        
+        label1 = new JLabel("Threshold : ");
+        label1.setPreferredSize(new Dimension(70, 30));
+        add(label1);
 
+        inputThreshold = ComponentFactory.newInput("e.g. 0.25", Size.Small);
+        inputThreshold.setEnabled(false);
+        add(inputThreshold);
+
+        add(Box.createRigidArea(new Dimension(30, 30)));
+
+        btnThreshold = ComponentFactory.newButton("Set threshold", action.Handler(ParameterAction.ADD_THRESHOLD), Size.Medium);
+        btnThreshold.setEnabled(false);
+        add(btnThreshold);
+        
         add(Box.createRigidArea(new Dimension(210, 30)));
-
+        
         btnTable = ComponentFactory.newButton("Generate Table", action.Handler(ParameterAction.TABLE), Size.Medium);
         btnTable.setEnabled(false);
         add(btnTable);
@@ -175,6 +192,11 @@ public class ParameterPanel extends JPanel
     {
         try{return Integer.parseInt(inputIteration.getText());}
         catch (Exception e){}return 0;
+    }
+    public Double getThreshold()
+    {
+        try{return Double.parseDouble(inputThreshold.getText());}
+        catch (Exception e){}return new Double(0);
     }
     
     public Approach getApproach()
@@ -198,7 +220,7 @@ public class ParameterPanel extends JPanel
 
     private enum ParameterAction
     {
-        SET_FUNCTION, ADD_INTERVAL, RESET, ADD_ITERATION, GRAPH, TABLE, SET_METHOD
+        SET_FUNCTION, ADD_INTERVAL, RESET, ADD_ITERATION, GRAPH, TABLE, SET_METHOD, ADD_THRESHOLD
     }
 
     private class ActionHandler
@@ -209,12 +231,14 @@ public class ParameterPanel extends JPanel
             switch (e)
             {
             case ADD_INTERVAL:  return new AddInterval();
-            case SET_FUNCTION:      return new SetFunction();
+            case ADD_THRESHOLD: return new AddThreshold();
+            case SET_FUNCTION:  return new SetFunction();
             case ADD_ITERATION: return new AddIteration();
             case GRAPH:         return new Graph();
             case RESET:         return new Reset();
             case TABLE:         return new Table();
             case SET_METHOD:    return new SetMethod();
+            
 
             default:
                 break;
@@ -245,8 +269,10 @@ public class ParameterPanel extends JPanel
                 rightInterval.setEnabled(value);
                 leftInterval.setEnabled(value);
                 inputIteration.setEnabled(value);
+                inputThreshold.setEnabled(value);
                 btnInterval.setEnabled(value);
                 btnIteration.setEnabled(value);
+                btnThreshold.setEnabled(value);
                 btnTable.setEnabled(value);
             }
 
@@ -265,6 +291,19 @@ public class ParameterPanel extends JPanel
                 
                 // BUT WHAT IS THIS SUPPOSED TO DO?!
                 // Mukhang error checking lang
+            }
+
+        }
+        public final class AddThreshold implements ActionListener
+        {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                if (Util.isInputNumerical(inputThreshold))
+                    return;
+                hasError = true;
+                Util.Error(ErrorMessage.INPUT_NUMBERS_ONLY);
             }
 
         }
@@ -300,8 +339,9 @@ public class ParameterPanel extends JPanel
                 
                 double left = currentInterval.getLeftInterval();
                 double right = currentInterval.getRightInterval();
+                double threshold = getThreshold();
                 Model model = Model.Instance;
-                model.compute(left, right, getIterations(), getApproach());
+                model.compute(left, right, getIterations(), threshold, getApproach());
                 iterations = model.getIterations();
                 view.InitializeTable(iterations, getApproach());
                 

@@ -11,10 +11,12 @@ public abstract class Method {
     
 	public int iteration;
     protected Approach approach;
+    protected double threshold;
 	
-	public Method(Approach approach, int iteration) {
+	public Method(Approach approach, int iteration, double threshold) {
 		this.approach = approach;
         this.iteration = iteration;
+        this.threshold = threshold;
 	}
 
 }

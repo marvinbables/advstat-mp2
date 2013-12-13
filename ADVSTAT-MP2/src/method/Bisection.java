@@ -6,8 +6,8 @@ import model.Iteration;
 
 public class Bisection extends Method {
 	
-	public Bisection(int iteration) {
-		super(Method.Approach.Bisection, iteration);
+	public Bisection(int iteration, double threshold) {
+		super(Method.Approach.Bisection, iteration, threshold);
 	}
 	
 	public ArrayList<Iteration> compute(double x0, double x1) {
