@@ -383,6 +383,9 @@ public class ParameterPanel extends JPanel
                     double left = Double.parseDouble(leftInterval.getText());
                     double right = Double.parseDouble(rightInterval.getText());
                     
+                    if (left >= right)
+                        throw new Exception("The left interval must be less than the right interval.");
+                    
                     GraphParameters.StartX = left;
                     GraphParameters.EndX = right;
                     
@@ -390,6 +393,8 @@ public class ParameterPanel extends JPanel
                     currentInterval = new Interval(left, right);
                 }catch(NumberFormatException err){
                     Util.Error(ErrorMessage.INPUT_NUMBERS_ONLY);
+                }catch (Exception error) {
+                    Util.Error(error.getMessage());
                 }
             }
         }
