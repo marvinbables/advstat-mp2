@@ -87,7 +87,7 @@ public class View extends JFrame implements GraphListener
 
         tablePanel = new JPanel();
         // tablePanel.setBorder(BorderFactory.createEtchedBorder());
-        tablePanel.setPreferredSize(new Dimension(430, 310));
+        tablePanel.setPreferredSize(new Dimension(430, 300));
 
         imgNext = new ImageIcon("icons/next.png");
         imgPrev = new ImageIcon("icons/prev.png");
@@ -105,7 +105,7 @@ public class View extends JFrame implements GraphListener
         tblInfo = new JTable(tblModel);
 
         scroll = new JScrollPane(tblInfo, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        scroll.setPreferredSize(new Dimension(420, 300));
+        scroll.setPreferredSize(new Dimension(420, 250));
 
         tablePanel.add(scroll);
 
@@ -186,13 +186,13 @@ public class View extends JFrame implements GraphListener
 
     private DefaultTableModel setupTableRegula()
     {
-        return new DefaultTableModel(new Object[][] {}, new String[] { "x0", "x1", "x2", "y0", "y1", "y2" }
+        return new DefaultTableModel(new Object[][] {}, new String[] {"iter", "x0", "x1", "x2", "y0", "y1", "y2" }
 
         )
         {
 
             @SuppressWarnings("rawtypes")
-            Class[] columnTypes = new Class[] { Double.class, Double.class, Double.class, Double.class, Double.class, Double.class };
+            Class[] columnTypes = new Class[] { String.class, Double.class, Double.class, Double.class, Double.class, Double.class, Double.class };
 
             @SuppressWarnings({ "rawtypes", "unchecked" })
             public Class getColumnClass(int columnIndex)
@@ -210,20 +210,20 @@ public class View extends JFrame implements GraphListener
 
     private DefaultTableModel setupTableSecant()
     {
-        return new DefaultTableModel(new Object[][] {}, new String[] { "x", "f(x)" }
+        return new DefaultTableModel(new Object[][] {}, new String[] { "iter", "x", "f(x)" }
 
         )
         {
 
             @SuppressWarnings("rawtypes")
-            Class[] columnTypes = new Class[] { Double.class, Double.class };
+            Class[] columnTypes = new Class[] { String.class ,Double.class, Double.class };
 
             @SuppressWarnings({ "rawtypes", "unchecked" })
             public Class getColumnClass(int columnIndex)
             {
                 return columnTypes[columnIndex];
             }
-
+            
             public boolean isCellEditable(int row, int column)
             {
                 // all cells false
@@ -264,13 +264,13 @@ public class View extends JFrame implements GraphListener
     public void InitializeTable(ArrayList<Iteration> iterations, Approach approach)
     {
         ResetTable();
-        Double[][] rowEntries;
+        Object[][] rowEntries;
         InitializeTable(approach);
         switch (approach)
         {
 
         case RegulaFalsi:
-            rowEntries = new Double[iterations.size()][7];
+            rowEntries = new Object[iterations.size()][7];
 
             if (iterations.size() == 0)
                 rowEntries = null;
@@ -278,18 +278,19 @@ public class View extends JFrame implements GraphListener
             for (int i = 0; i < iterations.size(); i++)
             {
                 Iteration x = iterations.get(i);
-                rowEntries[i][0] = x.getX0();
-                rowEntries[i][1] = x.getX1();
-                rowEntries[i][2] = x.getX2();
-                rowEntries[i][3] = x.getY0();
-                rowEntries[i][4] = x.getY1();
-                rowEntries[i][5] = x.getY2();
+                rowEntries[i][0] = new Integer(i + 1);
+                rowEntries[i][1] = x.getX0();
+                rowEntries[i][2] = x.getX1();
+                rowEntries[i][3] = x.getX2();
+                rowEntries[i][4] = x.getY0();
+                rowEntries[i][5] = x.getY1();
+                rowEntries[i][6] = x.getY2();
 
                 tblModel.addRow(rowEntries[i]);
             }
             break;
         case Secant:
-            rowEntries = new Double[iterations.size()][3];
+            rowEntries = new Object[iterations.size()][3];
 
             if (iterations.size() == 0)
                 rowEntries = null;
@@ -297,8 +298,9 @@ public class View extends JFrame implements GraphListener
             for (int i = 0; i < iterations.size(); i++)
             {
                 Iteration x = iterations.get(i);
-                rowEntries[i][0] = x.getX();
-                rowEntries[i][1] = x.getY();
+                rowEntries[i][0] = new Integer(i + 1);
+                rowEntries[i][1] = x.getX();
+                rowEntries[i][2] = x.getY();
 
                 tblModel.addRow(rowEntries[i]);
             }
