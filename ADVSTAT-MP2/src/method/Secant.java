@@ -19,12 +19,16 @@ public class Secant extends Method {
 		iterations.add(new Iteration(x2, currFx, Polynomial.fprime(x2)));
 		int i = 0;
 		
-		while(i < iteration) {
+		double error = 999;
+		while(i < iteration && error > threshold) {
 			nextX = currXi - ( currFx * (prevX - currXi) ) / (prevFx - currFx);
 			prevX = currXi;
 			prevFx = currFx;
 			currXi = nextX;
 			currFx = Polynomial.f(currXi);
+			
+			error = prevFx - currFx;
+			
 			iterations.add(new Iteration(currXi, currFx, Polynomial.fprime(currXi)));
 			i++;
 		}
