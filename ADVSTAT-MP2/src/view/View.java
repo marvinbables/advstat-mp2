@@ -235,8 +235,6 @@ public class View extends JFrame implements GraphListener
     @Override
     public void GraphRequested(GraphParameters parameters)
     {
-        double begin = GraphParameters.StartX;
-        double end = GraphParameters.EndX;
         graphPanel.removeAll();
 
         if (parameters.polynomial == null || parameters.polynomial.getTerms().size() == 0)
@@ -244,24 +242,20 @@ public class View extends JFrame implements GraphListener
             Util.Error("Invalid polynomial to graph.");
             return;
         }
-        
-        graph = new PolynomialGraph(
-                new PolynomialFunction2D(parameters.polynomial.getDoubles()),
-                "Graph of f(x)", 
-                begin, 
-                end, 
-                parameters.polynomial.toString());
-        
-        if (parameters.approach == null){
+
+        graph = new PolynomialGraph(parameters);
+
+        if (parameters.approach == null)
+        {
             graphPanel.add(graph.getPolynomialChart());
             return;
         }
-        
+
         switch (parameters.approach)
         {
         case Secant:
         case RegulaFalsi:
-            graphPanel.add(graph.getScatterChart());            
+            graphPanel.add(graph.getScatterChart());
         default:
             break;
         }

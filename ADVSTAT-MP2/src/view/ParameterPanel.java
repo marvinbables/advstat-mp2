@@ -57,9 +57,6 @@ public class ParameterPanel extends JPanel
 
     private final ActionHandler  action           = new ActionHandler();
 
-    /* What the f */
-    private Model                model            = new Model();
-
     private boolean              hasError         = false;
     private ArrayList<Iteration> iterations;
 
@@ -275,7 +272,7 @@ public class ParameterPanel extends JPanel
         {
             public void actionPerformed(ActionEvent e)
             {
-                GraphParameters parameters = new GraphParameters(currentPolynomial, getIterations(), getApproach());
+                GraphParameters parameters = new GraphParameters(currentPolynomial, iterations, getApproach());
                 graphListener.GraphRequested(parameters);
                 ActionEvent actionEvent = new ActionEvent(e.getSource(), e.getID(), e.getActionCommand());
                 view.fireActionEvent(ViewAction.BACK, actionEvent);
@@ -303,9 +300,13 @@ public class ParameterPanel extends JPanel
                 
                 double left = currentInterval.getLeftInterval();
                 double right = currentInterval.getRightInterval();
+                Model model = Model.Instance;
                 model.compute(left, right, getIterations(), getApproach());
                 iterations = model.getIterations();
                 view.InitializeTable(iterations, getApproach());
+                
+                GraphParameters parameters = new GraphParameters(currentPolynomial, iterations, getApproach());
+                graphListener.GraphRequested(parameters);
                 
                 ActionEvent actionEvent = new ActionEvent(e.getSource(), e.getID(), e.getActionCommand());
                 view.fireActionEvent(ViewAction.NEXT, actionEvent);

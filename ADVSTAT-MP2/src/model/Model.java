@@ -7,7 +7,8 @@ import method.RegulaFalsi;
 import method.Secant;
 
 public class Model {
-
+    public static final Model Instance = new Model();
+    
 	ArrayList<Iteration> iterations = null;
 	
 	public void compute(double x0, double x1, int numIteration, Approach approach) {

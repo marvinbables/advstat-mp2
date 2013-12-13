@@ -1,15 +1,13 @@
-import model.Model;
 import view.View;
-import controller.Controller;
 
 
 public class Driver {
 
 	@SuppressWarnings("unused")
     public static void main(String[] args) {
-	 	Model model = new Model();
-		View view = new View();
-		Controller controller = new Controller(view, model);
+		
+	    /* Lols YOLO CODE FORGET MODEL FORGET CONTROLLER #OBJECTP */
+	    View view = new View();
 		
 /*		Polynomial.setPolynomial(1, 2, -78.8, 0);
 		Secant secant= new Secant(4);

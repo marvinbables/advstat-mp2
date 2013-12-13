@@ -2,6 +2,9 @@ package view;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.util.ArrayList;
+
+import model.Iteration;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -13,6 +16,8 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
+import view.listeners.GraphListener.GraphParameters;
+
 public class PolynomialGraph
 {
     private PolynomialFunction2D graphableFunction;
@@ -22,15 +27,16 @@ public class PolynomialGraph
 
     private ChartPanel           scatterChart;
     private ChartPanel           polynomialChart;
+    private ArrayList<Iteration> iterations;
 
-    public PolynomialGraph(PolynomialFunction2D polynomialFunction2D, String graphTitle, double start, double end, String label)
+    public PolynomialGraph(GraphParameters parameters)
     {
-        graphableFunction = polynomialFunction2D;
-        this.graphTitle = graphTitle;
-        this.start = start;
-        this.end = end;
-        graphTitle = label;
-        start = end;
+        this.graphableFunction = new PolynomialFunction2D(parameters.polynomial.getDoubles());
+        this.graphTitle = parameters.polynomial.toString(); 
+        this.iterations = parameters.iterations;
+        
+        this.start = GraphParameters.StartX;
+        this.end = GraphParameters.EndX;
 
         InitPolynomialChart();
         InitScatterplotChart();
